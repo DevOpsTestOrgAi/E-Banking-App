@@ -24,5 +24,5 @@ The E-Banking Application is a web-based banking platform that allows users to p
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/e-banking-app.git
+   git clone https://github.com/DevOpsTestOrgAi/E-Banking-App.git
    cd e-banking-app
