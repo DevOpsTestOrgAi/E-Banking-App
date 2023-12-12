@@ -37,7 +37,8 @@ public class Customer {
     @ManyToOne
     @JoinColumn(name = "siron_id")
     private Siron siron;
-
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Otp> otps;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdAt;
