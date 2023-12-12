@@ -1,43 +1,28 @@
-# LinkedIn Clone Microservices Project
+# E-Banking Application
 
-This project is a microservices-based LinkedIn clone, designed to provide functionalities similar to LinkedIn's core features. The project is structured as a set of microservices, each handling specific functionalities.
+The E-Banking Application is a web-based banking platform that allows users to perform various banking operations, including money transfers, account management, and transaction history tracking. This application is built using [insert technologies and frameworks used, e.g., Spring Boot, React, etc.].
 
-## Microservices
+## Features
 
-1. **JOBS Microservice**
-   - Responsible for handling job-related functionalities.
-   - Base URI: `/api/v1/jobs/`
+- **User Authentication:** Secure user authentication and authorization mechanisms.
+- **Money Transfers:** Facilitates fund transfers between accounts, both within the bank and to external accounts.
+- **Account Management:** Allows users to view account details, update personal information, and manage beneficiaries.
+- **Transaction History:** Provides a comprehensive transaction history for users to track their financial activities.
+- **Notifications:** Sends notifications to users for important events, such as successful transactions or security alerts.
+- **KYC (Know Your Customer):** Implements KYC procedures to ensure compliance with regulatory requirements.
 
-2. **LINKEDINERS Microservice**
-   - Manages user-related operations and profiles.
-   - Base URI: `/api/v1/linkediners/`
+## Technologies Used
 
-3. **CONVERSATIONS Microservice**
-   - Deals with messaging and conversations between users.
-   - Base URI: `/api/v1/conversations/`
+- [Spring Boot, ReactJs, Microservices, Distributed Systems, DevOps, CI/CD, Testing]
 
-4. **NETWORK Microservice**
-   - Manages user connections and networking features.
-   - Base URI: `/api/v1/network/`
+## Prerequisites
 
-5. **NOTIFICATIONS Microservice**
-   - Handles notification-related functionalities.
-   - Base URI: `/api/v1/notifications/`
-
-6. **POSTS Microservice**
-   - Manages user posts and related interactions.
-   - Base URI: `/api/v1/posts/`
-
-7. **SEARCH Microservice**
-   - Enables users to search for various entities within the platform.
-   - Base URI: `/api/v1/search/`
+- [Spring Boot, ReactJs, Microservices, Distributed Systems, DevOps, CI/CD, Testing]
 
 ## Getting Started
 
-To run the LinkedIn Clone Microservices project, follow these steps:
-
-1. Clone the repository:
+1. **Clone the Repository:**
 
    ```bash
-   git clone git@github.com:Medelouali/LinkedIn-Clone.git
-
+   git clone https://github.com/your-username/e-banking-app.git
+   cd e-banking-app

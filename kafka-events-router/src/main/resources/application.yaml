@@ -1,6 +1,0 @@
-
-server:
-  port: 8089
-spring:
-  config:
-    import: configserver:http://localhost:8086/

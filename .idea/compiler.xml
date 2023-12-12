@@ -8,16 +8,16 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="identity-provider" />
-        <module name="jobs" />
         <module name="kafka-events-router" />
-        <module name="posts" />
         <module name="eureka-server" />
         <module name="network" />
         <module name="config-server" />
         <module name="search" />
+        <module name="transfer" />
         <module name="kafka" />
         <module name="api-gateway" />
         <module name="messages" />
+        <module name="customers" />
         <module name="linkediners" />
         <module name="notifications" />
       </profile>
@@ -25,6 +25,8 @@
     <bytecodeTargetLevel>
       <module name="clients" target="17" />
       <module name="feign-client" target="17" />
+      <module name="jobs" target="17" />
+      <module name="posts" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

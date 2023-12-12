@@ -6,14 +6,14 @@
     <file url="file://$PROJECT_DIR$/clients/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/config-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/config-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/customers/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/customers/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka-server/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/feign-client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/feign-client/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/identity-provider/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/identity-provider/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jobs/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/jobs/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/kafka-events-router/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/kafka-events-router/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/kafka/src/main/java" charset="UTF-8" />
@@ -26,11 +26,11 @@
     <file url="file://$PROJECT_DIR$/network/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/notifications/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/notifications/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/posts/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/posts/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/search/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/search/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/transfer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/transfer/src/main/resources" charset="UTF-8" />
   </component>
 </project>

@@ -35,7 +35,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/Medelouali/config-server-properties
+          uri: https://github.com/DevOpsTestOrgAi/Config-Server
 
 eureka:
   client:
