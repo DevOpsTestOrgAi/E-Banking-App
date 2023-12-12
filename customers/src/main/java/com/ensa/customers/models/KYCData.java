@@ -1,11 +1,9 @@
-package com.ensa.transfers.models;
+package com.ensa.customers.models;
 
-import com.ensa.transfers.enums.TransferState;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table
@@ -14,17 +12,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transfer {
+public class KYCData {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private TransferState state;
-
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
-
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<TransferHistory> histories;
+    @OneToOne(mappedBy = "kycData")
+    private Customer customer;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

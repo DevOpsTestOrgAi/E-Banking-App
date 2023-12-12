@@ -1,6 +1,5 @@
-package com.ensa.transfers.models;
+package com.ensa.customers.models;
 
-import com.ensa.transfers.enums.TransferState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,17 +13,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transfer {
+public class Siron {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private TransferState state;
 
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
-
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<TransferHistory> histories;
+    @OneToMany(mappedBy = "siron", cascade = CascadeType.ALL)
+    private List<Customer> customersBlackList;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")

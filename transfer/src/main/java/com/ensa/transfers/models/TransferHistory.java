@@ -1,11 +1,9 @@
 package com.ensa.transfers.models;
 
-import com.ensa.transfers.enums.TransferState;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table
@@ -14,18 +12,13 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Transfer {
+public class TransferHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    private TransferState state;
-
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
-
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<TransferHistory> histories;
-
+    @ManyToOne
+    @JoinColumn(name = "transfer_id")
+    private Transfer transfer;
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdAt;
