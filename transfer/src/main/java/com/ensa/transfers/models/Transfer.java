@@ -13,11 +13,13 @@ import java.util.List;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class Transfer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @Column(unique = true, nullable = false, length = 20)
+    private String reference;
+    private String pinCode;
     private TransferState state;
 
     @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
@@ -29,4 +31,13 @@ public class Transfer {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Date createdAt;
+
+    public Transfer() {
+        this.reference = generateUniqueReference();
+    }
+
+    private String generateUniqueReference() {
+        long uniqueNumber = System.currentTimeMillis() % 1000000000L;
+        return "EDP837" + String.format("%09d", uniqueNumber);
+    }
 }

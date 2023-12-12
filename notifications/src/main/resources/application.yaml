@@ -20,11 +20,6 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
   application:
     name: notifications
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
   config:
     import: configserver:http://localhost:8086/
 

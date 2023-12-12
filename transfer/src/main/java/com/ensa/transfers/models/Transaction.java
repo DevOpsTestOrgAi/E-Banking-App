@@ -24,7 +24,6 @@ public class Transaction {
     private String senderId;
     private String receiverId;
     private TransferServedFrom transferServedFrom;
-    private String pinCode;
     private Duration validationDuration;
     private TransferType type;
     @ManyToOne
