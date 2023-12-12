@@ -44,7 +44,7 @@ spring:
           predicates:
             - Path=/api/v1/customers/**
   config:
-    import: configserver:http://localhost:8086/
+    import: configserver:http://localhost:8081/
 
 eureka:
   client:

@@ -21,7 +21,7 @@ spring:
   application:
     name: notifications
   config:
-    import: configserver:http://localhost:8086/
+    import: configserver:http://localhost:8081/
 
 eureka:
   client:

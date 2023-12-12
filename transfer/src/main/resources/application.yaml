@@ -18,9 +18,9 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
   application:
-    name: jobs
+    name: transfer
   config:
-    import: configserver:http://localhost:8086/
+    import: configserver:http://localhost:8081/
 
 eureka:
   client:
