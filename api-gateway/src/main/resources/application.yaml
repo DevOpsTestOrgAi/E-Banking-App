@@ -33,16 +33,22 @@ spring:
           uri: lb://TRANSFER
           predicates:
             - Path=/api/v1/transfer/**
+          filters:
+            - AuthenticationFilter
 
         - id: notifications
           uri: lb://NOTIFICATIONS
           predicates:
             - Path=/api/v1/notifications/**
+          filters:
+            - AuthenticationFilter
 
         - id: customers
           uri: lb://CUSTOMERS
           predicates:
             - Path=/api/v1/customers/**
+          filters:
+            - AuthenticationFilter
   config:
     import: configserver:http://localhost:8081/
 

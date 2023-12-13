@@ -20,14 +20,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public AuthResponse addNewUser(@RequestBody UserCredentials user) throws Exception{
+    public AuthResponse addNewUser(@RequestBody AuthDto user) throws Exception{
         if(userCredentialsRepo.findByEmail(user.getEmail()).isPresent())
             return new AuthResponse(
                 "",
                 "This email has already been registered, please try another one.",
                 true
             );
-        return service.saveUser(user);
+        UserCredentials userCredentials= UserCredentials.builder()
+                .email(user.getEmail()).password(user.getPassword()).build();
+        return service.saveUser(userCredentials);
     }
 
     @PostMapping("/token")
