@@ -47,7 +47,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_IMAGE = "algabrizaid/configserver:${imageTag}"
-               DOCKERFILE_LOCATION = "service-registry/Dockerfile"
+               DOCKERFILE_LOCATION = "ConfigServer/Dockerfile"
                 REGISTRY_CREDENTIALS = credentials('dockerhub')
             }
             steps {
