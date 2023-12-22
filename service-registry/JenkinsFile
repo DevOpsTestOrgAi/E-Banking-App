@@ -55,7 +55,7 @@ pipeline {
 
                     dir(cloneDir) {
                         // Use awk to replace the image tag
-                        sh "awk -v tag=${imageTag} 'BEGIN{OFS=FS=\":\"} /image: algabrizaid\\/serviceregistry:latest/{$2=tag} 1' k8s/service-registry-deployment.yml > tmpfile && mv tmpfile k8s/service-registry-deployment.yml"
+                        sh "awk -v tag=${imageTag} 'BEGIN{OFS=FS=\":\"} /image: algabrizaid\\/serviceregistry:latest/{\$2=tag} 1' k8s/service-registry-deployment.yml > tmpfile && mv tmpfile k8s/service-registry-deployment.yml"
 
                         echo "File content after updating image tag:"
                         sh "cat k8s/service-registry-deployment.yml"
