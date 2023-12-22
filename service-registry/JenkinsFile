@@ -54,24 +54,26 @@ pipeline {
                     sh "cat ${cloneDir}/k8s/service-registry-deployment.yml"
 
                     dir(cloneDir) {
-                        sh "sed -i 's|image: algabrizaid/serviceregistry:latest.*|image: algabrizaid/serviceregistry:${imageTag}|' k8s/service-registry-deployment.yml || echo 'sed command failed'"
-                    }
+                        // Use awk to replace the image tag
+                        sh "awk -v tag=${imageTag} 'BEGIN{OFS=FS=\":\"} /image: algabrizaid\\/serviceregistry:latest/{$2=tag} 1' k8s/service-registry-deployment.yml > tmpfile && mv tmpfile k8s/service-registry-deployment.yml"
 
-                    echo "File content after sed:"
-                    sh "cat ${cloneDir}/k8s/service-registry-deployment.yml"
+                        echo "File content after updating image tag:"
+                        sh "cat k8s/service-registry-deployment.yml"
 
-                    withCredentials([usernamePassword(credentialsId: 'git', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                        dir(cloneDir) {
-                            sh "git status"
-                            sh "git add ."
-                            sh "git status"
+                        // Continue with the rest of the pipeline steps
+                        withCredentials([usernamePassword(credentialsId: 'git', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                            dir(cloneDir) {
+                                sh "git status"
+                                sh "git add ."
+                                sh "git status"
 
-                            def commitOutput = sh(script: "git commit -m 'Update image tag in Kubernetes manifests'", returnStatus: true)
-                            if (commitOutput != 0) {
-                                echo "No changes to commit. Skipping commit step."
-                            } else {
-                                sh "git pull"
-                                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/zaidgabri/GitOps.git HEAD:main"
+                                def commitOutput = sh(script: "git commit -m 'Update image tag in Kubernetes manifests'", returnStatus: true)
+                                if (commitOutput != 0) {
+                                    echo "No changes to commit. Skipping commit step."
+                                } else {
+                                    sh "git pull"
+                                    sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/zaidgabri/GitOps.git HEAD:main"
+                                }
                             }
                         }
                     }
