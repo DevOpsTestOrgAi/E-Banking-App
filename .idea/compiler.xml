@@ -7,26 +7,23 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="identity-provider" />
-        <module name="kafka-events-router" />
-        <module name="eureka-server" />
-        <module name="network" />
-        <module name="config-server" />
-        <module name="search" />
-        <module name="transfer" />
-        <module name="kafka" />
-        <module name="api-gateway" />
-        <module name="messages" />
-        <module name="customers" />
-        <module name="linkediners" />
-        <module name="notifications" />
+        <module name="NotificationsService" />
+        <module name="ConfigServer" />
+        <module name="TransferService" />
+        <module name="ClientService" />
+        <module name="service-registry" />
+        <module name="CloudGateway" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="clients" target="17" />
-      <module name="feign-client" target="17" />
-      <module name="jobs" target="17" />
-      <module name="posts" target="17" />
-    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ClientService" options="-parameters" />
+      <module name="CloudGateway" options="-parameters" />
+      <module name="ConfigServer" options="-parameters" />
+      <module name="NotificationsService" options="-parameters" />
+      <module name="TransferService" options="-parameters" />
+      <module name="service-registry" options="-parameters" />
+    </option>
   </component>
 </project>
