@@ -64,12 +64,12 @@ pipeline {
                     def newImageLine = "image: ${registryName}:${imageTag}"
 
                     echo "File content before sed:"
-                    sh "cat ${manifestsDir}/deployment.yml"
+                    sh "cat ${manifestsDir}/service-registry-deployment.yml"
 
                     sh "sed -i 's|image: algabrizaid/serviceregistry:latest.*|${newImageLine}|' ${manifestsDir}/service-registry-deployment.yml || echo 'sed command failed'"
 
                     echo "File content after sed:"
-                    sh "cat ${manifestsDir}/deployment.yml"
+                    sh "cat ${manifestsDir}/service-registry-deployment.yml"
 
                     withCredentials([usernamePassword(credentialsId: 'git', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         dir(cloneDir) {
