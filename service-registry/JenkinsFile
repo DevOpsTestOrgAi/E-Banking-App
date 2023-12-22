@@ -33,7 +33,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_IMAGE = "algabrizaid/serviceregistry:${imageTag}"
-                DOCKERFILE_LOCATION = "E-Banking-App/service-registry/Dockerfile"
+                DOCKERFILE_LOCATION = "service-registry/Dockerfile"
                 REGISTRY_CREDENTIALS = credentials('dockerhub')
             }
             steps {
