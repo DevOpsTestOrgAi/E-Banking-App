@@ -52,8 +52,9 @@ pipeline {
                 script {
                     echo "Current directory: ${pwd()}"
                     def cloneDir = 'GitOps'
-
+                     sh "rm -rf ${cloneDir}"
                     if (!fileExists(cloneDir)) {
+
                         sh "git clone https://github.com/zaidgabri/GitOps.git ${cloneDir}"
                     }
 
