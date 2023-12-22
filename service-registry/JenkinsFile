@@ -65,9 +65,14 @@ pipeline {
                             sh "git status"
                             sh "git add ."
                             sh "git status"
-                            sh "git commit -m 'Update image tag in Kubernetes manifests'"
-                            sh "git pull"
-                            sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/zaidgabri/GitOps.git HEAD:main"
+
+                            def commitOutput = sh(script: "git commit -m 'Update image tag in Kubernetes manifests'", returnStatus: true)
+                            if (commitOutput != 0) {
+                                echo "No changes to commit. Skipping commit step."
+                            } else {
+                                sh "git pull"
+                                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/zaidgabri/GitOps.git HEAD:main"
+                            }
                         }
                     }
 
