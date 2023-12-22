@@ -51,7 +51,7 @@ pipeline {
 
                     gitConfigure()
 
-                    def manifestsDir = "k8s"
+                    def manifestsDir = "${cloneDir}/k8s"
                     def newImageLine = "image: ${registryName}:${imageTag}"
 
                     echo "File content before sed:"
