@@ -4,8 +4,14 @@
     <file url="file://$PROJECT_DIR$/ClientService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/CloudGateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ConfigServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ConfigServer/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/NotificationsService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/NotificationsService/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/TransferService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/TransferService/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-provider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/identity-provider/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/service-registry/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/service-registry/src/main/resources" charset="UTF-8" />
   </component>
 </project>

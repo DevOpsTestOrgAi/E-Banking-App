@@ -8,9 +8,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="NotificationsService" />
-        <module name="ConfigServer" />
+        <module name="identity-provider" />
         <module name="TransferService" />
         <module name="ClientService" />
+        <module name="ConfigServer" />
         <module name="service-registry" />
         <module name="CloudGateway" />
       </profile>
