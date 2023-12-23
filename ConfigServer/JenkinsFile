@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PATH = "${tool 'Maven'}/bin:${env.PATH}"
-        registryName = 'algabrizaid/serviceregistry'
+        registryName = 'algabrizaid/configserver'
         imageTag = "latest-${BUILD_NUMBER}"
         GIT_CONFIG_NAME = 'zaidgabri'
         GIT_CONFIG_EMAIL = 'zaidgabri976@gmail.com'
@@ -65,6 +65,7 @@ pipeline {
             steps {
                 script {
                     echo "Current directory: ${pwd()}"
+
                     def cloneDir = 'GitOps'
                      sh "rm -rf ${cloneDir}"
                     if (!fileExists(cloneDir)) {

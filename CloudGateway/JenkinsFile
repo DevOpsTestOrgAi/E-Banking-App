@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PATH = "${tool 'Maven'}/bin:${env.PATH}"
-        registryName = 'algabrizaid/serviceregistry'
+        registryName = 'algabrizaid/cloudgateway'
         imageTag = "latest-${BUILD_NUMBER}"
         GIT_CONFIG_NAME = 'zaidgabri'
         GIT_CONFIG_EMAIL = 'zaidgabri976@gmail.com'
