@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationsController {
     @Autowired
     NotificationsServcie notificationsServcie  ;
+    @GetMapping("/Test")
+    public String test() {
+
+        return "Hello zaid ";
+    }
     @PostMapping("/send-sms")
     public String sendSMS(@RequestBody SMS sms) {
         return notificationsServcie.sendSMS(sms);

@@ -12,7 +12,7 @@ spring:
         - id : TRANSFER-SERVICE
           uri: lb://TRANSFER-SERVICE
           predicates:
-            - Path=/order/**
+            - Path=/api/transfers/**
           filters:
             - name: CircuitBreaker
               args:
