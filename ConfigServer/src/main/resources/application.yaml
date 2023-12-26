@@ -23,5 +23,3 @@ eureka:
 
 
 
-  zipkin:
-    baseUrl: http://zipkin-svc:9411

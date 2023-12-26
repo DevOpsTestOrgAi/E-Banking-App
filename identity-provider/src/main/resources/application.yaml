@@ -21,12 +21,12 @@ spring:
   application:
     name: identity-provider
   config:
-    import: configserver:http://localhost:8081/
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
 
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://${DB_HOST:localhost}:8761/eureka/
+      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
     enabled: true
