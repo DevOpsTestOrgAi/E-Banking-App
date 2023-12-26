@@ -32,6 +32,12 @@ public class ClientManagementController {
 
         return consumer.getAllReceivedObjects();
     }
+    @GetMapping("/Test")
+    public String test() {
+
+        return "Hello zaid ";
+    }
+
 
 
 
