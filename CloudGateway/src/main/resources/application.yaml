@@ -22,7 +22,7 @@ spring:
         - id: CLIENT-SERVICE
           uri: lb://CLIENT-SERVICE
           predicates:
-            - Path=/client/**
+            - Path=/api/client/**
           filters:
             - name: CircuitBreaker
               args:
