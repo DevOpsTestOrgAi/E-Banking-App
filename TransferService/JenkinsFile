@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PATH = "${tool 'Maven'}/bin:${env.PATH}"
-        registryName = 'algabrizaid/clientservice'
+        registryName = 'algabrizaid/transferservice'
         imageTag = "latest-${BUILD_NUMBER}"
         GIT_CONFIG_NAME = 'zaidgabri'
         GIT_CONFIG_EMAIL = 'zaidgabri976@gmail.com'
@@ -26,7 +26,7 @@ pipeline {
             }
         stage('Build and Test Service Registry') {
             steps {
-                dir('ClientService') {
+                dir('TransferService') {
                     sh 'ls -ltr'
                     sh 'mvn clean package'
                 }
@@ -46,13 +46,13 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             environment {
-                DOCKER_IMAGE = "algabrizaid/clientservice:${imageTag}"
-               DOCKERFILE_LOCATION = "ClientService/Dockerfile"
+                DOCKER_IMAGE = "algabrizaid/transferservice:${imageTag}"
+               DOCKERFILE_LOCATION = "TransferService/Dockerfile"
                 REGISTRY_CREDENTIALS = credentials('dockerhub')
             }
             steps {
                 script {
-                    sh 'docker build -t ${DOCKER_IMAGE} ./ClientService'
+                    sh 'docker build -t ${DOCKER_IMAGE} ./TransferService'
                     def dockerImage = docker.image("${DOCKER_IMAGE}")
                     docker.withRegistry('https://index.docker.io/v1/', "dockerhub") {
                         dockerImage.push()
@@ -78,12 +78,12 @@ pipeline {
                     def newImageLine = "image: ${registryName}:${imageTag}"
 
                     echo "File content before sed:"
-                    sh "cat ${manifestsDir}/clientservice-deployment.yml"
+                    sh "cat ${manifestsDir}/transferservice-deployment.yml"
 
-                    sh "sed -i 's|image: algabrizaid/clientservice:latest.*|${newImageLine}|' ${manifestsDir}/clientservice-deployment.yml || echo 'sed command failed'"
+                    sh "sed -i 's|image: algabrizaid/transferservice:latest.*|${newImageLine}|' ${manifestsDir}/transferservice-deployment.yml || echo 'sed command failed'"
 
                     echo "File content after sed:"
-                    sh "cat ${manifestsDir}/clientservice-deployment.yml"
+                    sh "cat ${manifestsDir}/transferservice-deployment.yml"
 
                     withCredentials([usernamePassword(credentialsId: 'git', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         dir(cloneDir) {

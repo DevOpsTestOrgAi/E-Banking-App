@@ -4,8 +4,8 @@ ARG JAR_FILE=target/*.jar
 
 WORKDIR /app
 
-COPY ${JAR_FILE} ClientService.jar
+COPY ${JAR_FILE} TransferService.jar
 
-ENTRYPOINT ["java", "-jar", "ClientService.jar"]
+ENTRYPOINT ["java", "-jar", "TransferService.jar"]
 
-EXPOSE 8087
+EXPOSE 8082

@@ -25,6 +25,12 @@ public class TransferController {
         this.transferService = transferService;
     }
 
+    @GetMapping("/Test")
+    public String test() {
+
+        return "Hello zaid from transfer";
+    }
+
     @PostMapping("/initiate")
     public ResponseEntity<TransferResponse> initiateTransfer(@RequestBody TransferRequest transferRequest) throws JsonProcessingException {
 
