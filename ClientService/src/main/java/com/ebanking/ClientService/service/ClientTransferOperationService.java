@@ -6,6 +6,8 @@ import com.ebanking.ClientService.model.ServeTransferResponse;
 import com.ebanking.ClientService.model.TransferType;
 
 public interface ClientTransferOperationService {
+    void sendOTP(Long customerID);
+
     // Mettre le transfert à l'état "A servir"
     void markAsToServe(TransferEntity transfer);
 

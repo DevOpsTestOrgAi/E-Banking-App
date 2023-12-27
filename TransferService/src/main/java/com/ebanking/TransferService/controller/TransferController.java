@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transfers")
+@CrossOrigin(origins = "*")
 public class TransferController {
 
     private final TransferService transferService;
@@ -23,12 +24,6 @@ public class TransferController {
     @Autowired
     public TransferController(TransferService transferService) {
         this.transferService = transferService;
-    }
-
-    @GetMapping("/Test")
-    public String test() {
-
-        return "Hello zaid from transfer";
     }
 
     @PostMapping("/initiate")
@@ -48,10 +43,7 @@ public class TransferController {
         return transfer.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    @GetMapping("/getBeneficiaries/{transferId}")
-    public List<Beneficiary> getBeneficiariesByTransferId(@PathVariable Long transferId) {
-        return transferService.getAllBeneficiariesByTransferId(transferId);
-    }
+
     @PutMapping("/{transferId}/max-pin-attempts")
     public ResponseEntity<String> updateMaxPINAttempts(
             @PathVariable Long transferId,

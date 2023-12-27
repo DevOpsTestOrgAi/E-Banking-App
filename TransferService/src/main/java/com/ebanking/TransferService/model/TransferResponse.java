@@ -16,4 +16,6 @@ import javax.persistence.SecondaryTable;
 @Data
 public class TransferResponse {
     private String  message  ;
+    private  Boolean isInitaited;
+    private  String pdfUrl;
 }

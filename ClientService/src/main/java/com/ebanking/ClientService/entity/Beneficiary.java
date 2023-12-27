@@ -1,10 +1,13 @@
 package com.ebanking.ClientService.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,16 +20,22 @@ public class Beneficiary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String rib;
+    private String cin;
+
     @ManyToOne
-    @JoinColumn(name = "transfer_id")
-    private TransferEntity transfer;
-    private  String  firstName ;
-    private  String  lastname ;
-    private  String  phone ;
-    private  String   rib  ;
-    private  String  cin  ;
+    @JoinColumn(name = "customer_id")
+    @JsonIgnoreProperties("beneficiaries")
+    private Customer customer;
 
+    @ManyToOne
+    @JoinColumn(name = "transfer_entity_id")
+    private TransferEntity transferEntity;
 
-
-
+    @OneToMany(mappedBy = "beneficiary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wallet> wallets;
+    private long transferID;
 }

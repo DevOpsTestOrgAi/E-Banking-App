@@ -66,7 +66,7 @@ public interface TransferService {
 TransferResponse initiateTransfer(TransferRequest transferRequest) throws JsonProcessingException;
 void serveTransfer( Long transferID);
 Optional<TransferEntity> getTransferByRef(String ref );
-List<Beneficiary> getAllBeneficiariesByTransferId(Long transferId);
+
 void updateMaxPINAttempts(Long transferId, int newMaxPINAttempts);
 void blockTransfer(Long transferId);
 

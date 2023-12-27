@@ -12,12 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 
 public class BeneficiaryRequest {
-    private Long transferID  ;
-    private String accountNumber ;
-    private  String  firstName ;
-    private  String  lastname ;
-    private  String  phone ;
-    private String   rib  ;
-    private  String  cin  ;
-
+    private Long customerID;
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String rib;
+    private String cin;
 }

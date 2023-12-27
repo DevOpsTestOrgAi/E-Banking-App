@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class BlacklistRequest {
     private String cin;
     private String rib ;
+    private  String  phone  ;
 
     private String reason;
 }
