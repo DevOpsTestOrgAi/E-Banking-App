@@ -28,21 +28,13 @@ pipeline {
             steps {
                 dir('NotificationsService') {
                     sh 'ls -ltr'
+                    sh 'docker-compose -f kafka-docker-compose.yml  up'
                     sh 'mvn clean package'
                 }
             }
         }
 
-//         stage('Static Code Analysis') {
-//             environment {
-//                 SONAR_URL = "http://52.149.213.148:9000"
-//             }
-//             steps {
-//                 withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-//                     sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-//                 }
-//             }
-//         }
+
 
         stage('Build and Push Docker Image') {
             environment {
