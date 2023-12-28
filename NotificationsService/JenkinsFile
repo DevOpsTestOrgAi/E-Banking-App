@@ -29,7 +29,7 @@ pipeline {
                 dir('NotificationsService') {
                     sh 'ls -ltr'
                     sh '/usr/local/bin/docker-compose -f kafka-docker-compose.yml up -d'
-                     sh 'sleep 10'
+                    sh 'sleep 10'
                     sh 'mvn clean package'
                 }
             }
