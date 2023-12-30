@@ -1,13 +1,13 @@
-package com.ensa.identityprovider;
+package com.bezkoder.springjwt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class IdentityProviderApplication {
+public class SpringBootSecurityJwtApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(IdentityProviderApplication.class, args);
+    SpringApplication.run(SpringBootSecurityJwtApplication.class, args);
 	}
 
 }

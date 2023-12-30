@@ -1,13 +1,13 @@
-package com.ensa.identityprovider;
+package com.bezkoder.springjwt;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class IdentityProviderApplicationTests {
+public class SpringBootSecurityJwtApplicationTests {
 
 	@Test
-	void contextLoads() {
+	public void contextLoads() {
 	}
 
 }

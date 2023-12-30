@@ -104,6 +104,6 @@ pipeline {
 }
 
 def gitConfigure() {
-    sh "git config user.email ${GIT_CONFIG_EMAIL}"
-    sh "git config user.name ${GIT_CONFIG_NAME}"
+    sh "git config customer.email ${GIT_CONFIG_EMAIL}"
+    sh "git config customer.name ${GIT_CONFIG_NAME}"
 }
