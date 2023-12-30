@@ -8,7 +8,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="NotificationsService" />
-        <module name="identity-provider" />
         <module name="TransferService" />
         <module name="ClientService" />
         <module name="ConfigServer" />
@@ -16,6 +15,9 @@
         <module name="CloudGateway" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="identity-provider" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
