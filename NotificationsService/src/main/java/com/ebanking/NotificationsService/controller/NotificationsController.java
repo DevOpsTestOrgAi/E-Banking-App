@@ -25,13 +25,7 @@ public class NotificationsController {
     public ResponseEntity<SendVerificationCodeResponse> verifyIdentity(@RequestParam String phone, @RequestParam String code) {
         return new ResponseEntity<>(notificationsServcie.verifyIdentity(phone,code), HttpStatus.OK);
     }
-    @PostMapping("/test")
 
-    public String test(@RequestBody Customer customer
-    ) throws JsonProcessingException {
-
-        return notificationsServcie.test(customer);
-    }
          @GetMapping("/testNotif")
     public String test() {
         return "Ana ankikek ya mhamed";

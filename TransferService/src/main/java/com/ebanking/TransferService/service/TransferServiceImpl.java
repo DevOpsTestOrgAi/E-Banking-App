@@ -29,8 +29,8 @@ import java.util.Optional;
          private ExternalClientService externalClientService;
          @Autowired
          private ExternalNotificationService externalNotificationService;
-         @Autowired
-         private Producer producer ;
+//         @Autowired
+//         private Producer producer ;
          @Autowired
          private  TransferReceipt transferReceipt;
          @Autowired
@@ -159,7 +159,7 @@ import java.util.Optional;
                             // saving the transfer object
 
                             transferRepository.save(transferEntity);
-                            producer.sendMessage(transferEntity);
+
                             // Réponse de succès
                             return TransferResponse.builder().message("transfert ajouté avec la référence  : "
                                     + transferEntity.getReference()).isInitaited(true).transferID(transferEntity.getId()).build();
@@ -229,7 +229,7 @@ import java.util.Optional;
                             // Set the PDF content to the TransferEntity
                             // saving the transfer object
                            TransferEntity te= transferRepository.save(transferEntity);
-                            producer.sendMessage(transferEntity);
+
                             // Réponse de succès
                             return TransferResponse.builder().message("transfert ajouté avec la référence : "
                                     + transferEntity.getReference() ).transferID(te.getId()).isInitaited(true).build();
@@ -281,7 +281,7 @@ import java.util.Optional;
                         //updateTransferIDInBeneficiary(
                         //            @PathVariable Long beneficiaryId,
                         //            @RequestParam Long transferId)
-                        producer.sendMessage(transferEntity);
+
 
 
                         // Réponse de succès

@@ -5,7 +5,7 @@ import com.ebanking.ClientService.entity.*;
 import com.ebanking.ClientService.model.*;
 import com.ebanking.ClientService.service.ClientManagementServiceImpl;
 import com.ebanking.ClientService.service.ClientTransferOperationServiceImpl;
-import com.ebanking.ClientService.service.Consumer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +23,15 @@ public class ClientManagementController {
     private ClientManagementServiceImpl clientManagementService;
     @Autowired
     ClientTransferOperationServiceImpl clientTransferOperationService;
-    @Autowired
-    private  Consumer consumer;
+//    @Autowired
+//    private  Consumer consumer;
 
 
-    @GetMapping("/getAllFromTopic")
-    public List<Object> consumeAndGetObjects() {
-
-        return consumer.getAllReceivedObjects();
-    }
+//    @GetMapping("/getAllFromTopic")
+//    public List<Object> consumeAndGetObjects() {
+//
+//        return consumer.getAllReceivedObjects();
+//    }
 
 
 

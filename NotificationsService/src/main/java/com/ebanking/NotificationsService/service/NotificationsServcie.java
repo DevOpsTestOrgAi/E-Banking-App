@@ -8,6 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface NotificationsServcie {
     String  sendSMS( SMS sms );
     SendVerificationCodeResponse verifyIdentity(String phone , String code );
-    String test(Customer customer) throws JsonProcessingException;
+//    String test(Customer customer) throws JsonProcessingException;
 
 }

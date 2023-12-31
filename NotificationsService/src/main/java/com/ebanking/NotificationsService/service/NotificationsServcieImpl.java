@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class NotificationsServcieImpl implements NotificationsServcie {
-    @Autowired
-    Producer producer;
+//    @Autowired
+////    Producer producer;
 
     private final VonageClient vonageClient = VonageClient.builder().apiKey("3073e7dc").apiSecret("ZCZVrdhhblXHWQq1").build();
     private final String BRAND_NAME = "Vonage APIs";
@@ -72,9 +72,9 @@ public class NotificationsServcieImpl implements NotificationsServcie {
                     ).code(code).build();
         }
     }
-
-    @Override
-    public String test(Customer customer) throws JsonProcessingException {
-        return producer.sendMessage(customer);
-    }
+//
+//    @Override
+//    public String test(Customer customer) throws JsonProcessingException {
+//        return producer.sendMessage(customer);
+//    }
 }
