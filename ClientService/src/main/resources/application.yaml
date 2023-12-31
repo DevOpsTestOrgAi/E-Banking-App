@@ -15,11 +15,11 @@ spring:
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:3306/boa_db?createDatabaseIfNotExist=true
     username: root
-    password: ENSA2023
+    password: zaid@11
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
