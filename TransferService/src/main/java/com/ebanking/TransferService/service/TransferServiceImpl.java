@@ -8,11 +8,13 @@ import com.ebanking.TransferService.external.client.ExternalClientService;
 import com.ebanking.TransferService.external.client.ExternalNotificationService;
 import com.ebanking.TransferService.model.*;
 import com.ebanking.TransferService.repository.TransferRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,12 +28,13 @@ import java.util.Optional;
          @Autowired
          private ExternalClientService externalClientService;
          @Autowired
-         ExternalNotificationService externalNotificationService;
+         private ExternalNotificationService externalNotificationService;
          @Autowired
-         Producer producer ;
+         private Producer producer ;
          @Autowired
-         TransferReceipt transferReceipt;
-
+         private  TransferReceipt transferReceipt;
+         @Autowired
+          private TransferReceiptWalletToGAB transferReceiptWalletToGAB;
 
 
         private final TransferRepository transferRepository;
@@ -74,10 +77,9 @@ import java.util.Optional;
 
         @Override
         @Transactional
-        public TransferResponse initiateTransfer(TransferRequest transferRequest) throws JsonProcessingException {
+        public TransferResponse initiateTransfer(TransferRequest transferRequest) throws IOException {
             // Recherche du client par ID
             Optional<Customer> customerOptional = externalClientService.getCustomerById(transferRequest.getCustomerID());
-
             // Vérification de la présence du client
             if (customerOptional.isPresent()) {
                 Customer customer = customerOptional.get();
@@ -86,14 +88,17 @@ import java.util.Optional;
                 transferRequest.setAmount(totalAmount);
                 // Calcul du montant avec les frais
                 transferRequest.setAmount(calculateAmountWithFee(totalAmount, transferRequest.getFeeType()));
-                List<Long> ids = transferRequest.getBeneficiaries_ids();
-                List<Beneficiary> beneficiaries=getBeneficiariesByIds(transferRequest.getBeneficiaries_ids());
+//                List<Long> ids = transferRequest.getBeneficiaries_ids();
+//                List<Beneficiary> beneficiaries=getBeneficiariesByIds(transferRequest.getBeneficiaries_ids());
                 // Vérification de l'OTP
                 if (Objects.equals(transferRequest.getOtp(), customer.getOtp())) {
+//-------------------------------------------WALLET_TO_WALLET
                     // Gestion du type de transfert
                     if (transferRequest.getType() == TransferType.WALLET_TO_WALLET) {
                         // Vérification du solde du portefeuille
                         if (wallet.getBalance() > transferRequest.getAmount()) {
+                            List<String> beneficiariesFullName = new ArrayList<>();
+                            List<String>  beneficiariesRibs= new ArrayList<>();
                             // Création et sauvegarde de l'entité de transfert
                             transferRequest.setReference(generateReferenceNumber());
                             TransferEntity transferEntity = buildTransferEntity(transferRequest, customer);
@@ -104,37 +109,31 @@ import java.util.Optional;
                             // before saving the      transferEntity    beneficiaryAmount  from each beneficiary wallet
                             List<Long> beneficiaryIds = transferRequest.getBeneficiaries_ids();
                             List<Double> amounts = transferRequest.getAmounts();
-
                             for (int i = 0; i < beneficiaryIds.size(); i++) {
                                 Long beneficiaryId = beneficiaryIds.get(i);
+                                Optional<Customer> beneficiary =externalClientService.getCustomerById(beneficiaryId);
+                                if(beneficiary.isPresent()){
+                                    beneficiariesFullName.add(beneficiary.get().getFirstName()+" "+beneficiary.get().getLastName());
+                                    beneficiariesRibs.add(beneficiary.get().getRib());
+                                }
                                 Double amount = amounts.get(i);
-
                                 // Update the wallet balance for the giver (assuming id corresponds to the giver)
                                 Wallet beneficiaryWallet = externalClientService.getWalletById(beneficiaryId);
+
                                 externalClientService.updateWalletBalance(beneficiaryId,
                                         beneficiaryWallet.getBalance()+calculateAmountWithFee(amount,
-                                                transferRequest.getFeeType()));//                              @PutMapping("/update-customer-to-customer-id/{customerID}")
+                                                transferRequest.getFeeType()));//
+                                // @PutMapping("/update-customer-to-customer-id/{customerID}")
 //                            public ResponseEntity<Customer> updateCustomerToCustomerID(
 //                            @PathVariable long customerID,
 //                            @RequestParam long customerToCustomerID)
                                externalClientService.updateCustomerToCustomerID(beneficiaryId,transferRequest.getCustomerID());
-
-
                             }
-                          transferRepository.save(transferEntity);
+
                           // filling the  transfer recipient  with data:
                             String orderingFullName=customer.getFirstName()+" "+customer.getLastName();
-                             List<String> beneficiariesFullName = new ArrayList<>();
                              double amount=transferRequest.getAmount();
                              String orderingRib =customer.getRib();
-                              List<String>  beneficiariesRibs= new ArrayList<>();
-                              for(Long id  :  transferRequest.getBeneficiaries_ids()){
-                                  beneficiariesFullName.add(externalClientService.getBeneficiaryById(id).getFirstName()+
-                                          " "+externalClientService.getBeneficiaryById(id).getLastName());
-                                  beneficiariesRibs.add(externalClientService.getBeneficiaryById(id).getRib());
-
-
-                              }
 
                              String initiatedAt=transferEntity.getInitiatedAt();
                             // Call the TransferReceipt bean and fill it with data
@@ -144,55 +143,105 @@ import java.util.Optional;
                             transferReceipt.setOrderingRib(orderingRib);
                             transferReceipt.setBeneficiariesRibs(beneficiariesRibs);
                             transferReceipt.setInitiatedAt(initiatedAt);
+                            transferReceipt.setTransferType("Portefeuille à portefeuille");
+                            transferReceipt.setReference(transferEntity.getReference());
+                            transferReceipt.setIsInitiatedFromMobile(transferRequest.getIsInitiatedFromMobile());
 
-                            String path  = ".0..................................................................................................................................................................................../";
-                            // Generate the PDF
-                            transferReceipt.generateTransferReceipt(path+transferEntity.getReference()+"-recipient");
+                            // Generate the PDF content
+                            String newPdfFileName = transferEntity.getReference()+"-recipient.pdf";
+                            String newPdfPath = "G:/Microservices-ebanking-app/TransferService/" + newPdfFileName;
+                           transferReceipt.generateTransferReceipt(newPdfPath);
+                           // Read the content of the new PDF into a byte array
+                            byte[] pdfContent = Files.readAllBytes(Paths.get(newPdfPath));
+                            // Set the pdfContent property of transferEntity
+                            transferEntity.setPdfContent(pdfContent);
+                          // Set the PDF content to the TransferEntity
+                            // saving the transfer object
 
-
+                            transferRepository.save(transferEntity);
                             producer.sendMessage(transferEntity);
-
-
                             // Réponse de succès
-                            return TransferResponse.builder().message("transfert ajouté avec la référence : "
-                                    + transferEntity.getReference()).isInitaited(true).build();
+                            return TransferResponse.builder().message("transfert ajouté avec la référence  : "
+                                    + transferEntity.getReference()).isInitaited(true).transferID(transferEntity.getId()).build();
                         } else {
                             // Réponse en cas de solde insuffisant
                             return TransferResponse.builder().message("solde insuffisant! ")
                                     .isInitaited(false).build();
                         }
                     }
+//-----------------------------------------WALLET_TO_GAB
                     if (transferRequest.getType() == TransferType.WALLET_TO_GAB) {
                         // Configuration de la référence du transfert
                         transferRequest.setReference(generateReferenceNumber());
-                        transferRequest.setFeeType(FeeType.FEE_BENEFICIARY);
 
-                        // Calcul du montant avec les frais
-                        if (transferRequest.getIsNotificationsSendingChosen()) {
-                            transferRequest.setAmount(calculateAmountWithFee(transferRequest.getAmount() + 2.00,
-                                    transferRequest.getFeeType()));
+                        if (wallet.getBalance() > transferRequest.getAmount()) {
+                            //reducing the total amount from the  customer's wallet
+                            // Calcul du montant avec les frais
+                            if (transferRequest.getIsNotificationsSendingChosen()) {
+                                transferRequest.setAmount(transferRequest.getAmount()+ 2.00);
+                                // Envoi du SMS
+                                externalNotificationService.sendSMS(SMS.builder()
+                                        .ref(transferRequest.getReference())
+                                        .pin(transferRequest.getPINCode())
+                                        .amount(transferRequest.getAmounts().get(0))
+                                        .phone(transferRequest.getBeneficiaryRequest().getPhone())
+                                        .customerFirstName(customer.getFirstName())
+                                        .beneficiaryLastName(transferRequest.getBeneficiaryRequest().getLastName())
+                                        .beneficiaryFirstName(transferRequest.getBeneficiaryRequest().getFirstName())
+                                        .customerLastName(customer.getLastName())
+                                        .sendRef(true)
+                                        .build());
+                                externalClientService.updateWalletBalance(transferRequest.getCustomerID(), wallet.getBalance() - transferRequest.getAmount());
+                            } else {
+                                transferRequest.setAmount(calculateAmountWithFee(transferRequest.getAmount(), transferRequest.getFeeType()));
+                                externalClientService.updateWalletBalance(transferRequest.getCustomerID(), wallet.getBalance() - transferRequest.getAmount());
+                            }
+                            // Création et sauvegarde de l'entité de transfert
+                            TransferEntity transferEntity = buildTransferEntity(transferRequest, customer);
+                            transferRequest.getBeneficiaryRequest().setCustomerID(transferRequest.getCustomerID());
+                          AddBeneficiaryResponse addBeneficiaryResponse = externalClientService.addBeneficiary(transferRequest.getBeneficiaryRequest()).getBody();
+                            assert addBeneficiaryResponse != null;
+                            transferEntity.setBenefeicaryID(addBeneficiaryResponse.getId());
+                            //transferReceiptWalletToGAB
+                            // filling the  transfer recipient  with data:
+                            String  beneficiaryFullName =transferRequest.getBeneficiaryRequest().getFirstName()+" "+transferRequest.getBeneficiaryRequest().getLastName();
+                            String orderingFullName=customer.getFirstName()+" "+customer.getLastName();
+                            double amount=transferRequest.getAmount();
+                            String orderingRib =customer.getRib();
+                            String initiatedAt=transferEntity.getInitiatedAt();
+                            // Call the TransferReceipt bean and fill it with data
+                            transferReceiptWalletToGAB.setOrderingFullName(orderingFullName);
+                            transferReceiptWalletToGAB.setBeneficiaryFullName(beneficiaryFullName );
+                            transferReceiptWalletToGAB.setAmount(amount);
+                            transferReceiptWalletToGAB.setOrderingRib(orderingRib);
+                            transferReceiptWalletToGAB.setInitiatedAt(initiatedAt);
+                            transferReceiptWalletToGAB.setTransferType("Portefeuille à GAB");
+                            transferReceiptWalletToGAB.setReference(transferEntity.getReference());
+                            transferReceiptWalletToGAB.setIsInitiatedFromMobile(transferRequest.getIsInitiatedFromMobile());
+                            // Generate the PDF content
+                            String newPdfFileName = transferEntity.getReference()+"-recipient.pdf";
+                            String newPdfPath = "G:/Microservices-ebanking-app/TransferService/" + newPdfFileName;
+                            transferReceiptWalletToGAB.generateTransferReceipt(newPdfPath);
+                            // Read the content of the new PDF into a byte array
+                            byte[] pdfContent = Files.readAllBytes(Paths.get(newPdfPath));
+                            // Set the pdfContent property of transferEntity
+                            transferEntity.setPdfContent(pdfContent);
+                            // Set the PDF content to the TransferEntity
+                            // saving the transfer object
+                           TransferEntity te= transferRepository.save(transferEntity);
+                            producer.sendMessage(transferEntity);
+                            // Réponse de succès
+                            return TransferResponse.builder().message("transfert ajouté avec la référence : "
+                                    + transferEntity.getReference() ).transferID(te.getId()).isInitaited(true).build();
+                        }else {
+                            // Réponse en cas de solde insuffisant
+                            return TransferResponse.builder().message("solde insuffisant! ")
+                                    .isInitaited(false).build();
 
-                            // Envoi du SMS
-                            externalNotificationService.sendSMS(SMS.builder().
-                                    ref(transferRequest.getReference()).
-                                    pin(transferRequest.getPINCode()).
-                                    beneficiaries(beneficiaries).customer(customer).
-                                    amount(transferRequest.getAmount()).transferType(transferRequest.getType())
-                                    .sendRef(true)
-                                    .build());
-                        } else {
-                            transferRequest.setAmount(calculateAmountWithFee(transferRequest.getAmount(), transferRequest.getFeeType()));
                         }
-
-                        // Création et sauvegarde de l'entité de transfert
-                        TransferEntity transferEntity = buildTransferEntity(transferRequest, customer);
-                        transferRepository.save(transferEntity);
-                        producer.sendMessage(transferEntity);
-
-                        // Réponse de succès
-                        return TransferResponse.builder().message("transfert ajouté avec la référence : "
-                                + transferEntity.getReference()).isInitaited(true).build();
-                    } else if (transferRequest.getType() == TransferType.BANK_TO_GAB) {
+                    }
+//-------------------------------------------BANK_TO_GAB
+                    else if (transferRequest.getType() == TransferType.BANK_TO_GAB) {
                         // Configuration de la référence du transfert
                         transferRequest.setReference(generateReferenceNumber());
 
@@ -202,11 +251,15 @@ import java.util.Optional;
                                     transferRequest.getFeeType()));
 
                             // Envoi du SMS
-                            externalNotificationService.sendSMS(SMS.builder().
-                                    ref(transferRequest.getReference()).
-                                    pin(transferRequest.getPINCode()).
-                                    beneficiaries(beneficiaries).customer(customer).
-                                    amount(transferRequest.getAmount()).transferType(transferRequest.getType())
+                            externalNotificationService.sendSMS(SMS.builder()
+                                    .ref(transferRequest.getReference())
+                                    .pin(transferRequest.getPINCode())
+                                    .amount(transferRequest.getAmounts().get(0))
+                                    .phone(transferRequest.getBeneficiaryRequest().getPhone())
+                                    .customerFirstName(customer.getFirstName())
+                                    .beneficiaryLastName(transferRequest.getBeneficiaryRequest().getLastName())
+                                    .beneficiaryFirstName(transferRequest.getBeneficiaryRequest().getFirstName())
+                                    .customerLastName(customer.getLastName())
                                     .sendRef(true)
                                     .build());
                         } else {
@@ -218,10 +271,10 @@ import java.util.Optional;
                         TransferEntity transferEntity = buildTransferEntity(transferRequest, customer);
                         TransferEntity transfer = transferRepository.save(transferEntity);
                         long id = transfer.getId();
-                        System.out.println(id);
+
                        log.info("TransferIDd="+id);
                         for (Long beniID  : transferRequest.getBeneficiaries_ids()) {
-                            log.info("beniID="+id);
+
                             externalClientService.updateTransferIDInBeneficiary(beniID, id);
                         }
 
@@ -321,13 +374,14 @@ import java.util.Optional;
 
     private TransferEntity buildTransferEntity(TransferRequest transferRequest,  Customer customer) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         return TransferEntity.builder()
                 .reference(transferRequest.getReference())
                 .amount(transferRequest.getAmount())
                 .maxBAmountPeriodC(transferRequest.getMaxBAmountPeriodC())
                 .maxTransfersPerCustomer(transferRequest.getMaxTransfersPerCustomer())
                 .toBeServedFrom(transferRequest.getToBeServedFrom())
+
+
                 .PINCode(transferRequest.getPINCode())
                 .validationDuration(transferRequest.getValidationDuration())
                 .customer(customer)
@@ -337,7 +391,6 @@ import java.util.Optional;
                 .type(transferRequest.getType())
                 .build();
     }
-
     @Override
     public void serveTransfer(Long transferID) {
         Optional<TransferEntity> optionalTransfer = transferRepository.findById(transferID);
@@ -348,10 +401,7 @@ import java.util.Optional;
 
         // Save the updated transfer entity
         transferRepository.save(transferEntity);
-
-
     }
-
     @Override
     public Optional<TransferEntity> getTransferByRef(String ref) {
         return transferRepository.findByReference(ref) ;
@@ -375,6 +425,19 @@ import java.util.Optional;
             transferRepository.save(transfer);
         }
     }
+@Override
+    public byte[] getTransferReceipt(Long transferId) {
+        // Retrieve TransferEntity from the database
+        TransferEntity transferEntity = transferRepository.findById(transferId).orElse(null);
+
+        if (transferEntity != null) {
+
+            return transferEntity.getPdfContent();
+        } else {
+
+
+            return null;
+        }}
 
 }
 

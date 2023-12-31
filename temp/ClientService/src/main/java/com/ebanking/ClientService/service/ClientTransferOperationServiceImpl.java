@@ -1,13 +1,16 @@
 package com.ebanking.ClientService.service;
 
 import com.ebanking.ClientService.entity.Beneficiary;
+import com.ebanking.ClientService.entity.Customer;
 import com.ebanking.ClientService.entity.TransferEntity;
 import com.ebanking.ClientService.entity.Wallet;
+import com.ebanking.ClientService.external.client.ExternalNotificationService;
 import com.ebanking.ClientService.external.client.TransferClient;
 import com.ebanking.ClientService.model.TransferState;
 import com.ebanking.ClientService.model.TransferWithdrawRequest;
 import com.ebanking.ClientService.model.ServeTransferResponse;
 import com.ebanking.ClientService.model.TransferType;
+import com.ebanking.ClientService.repository.CustomerRepository;
 import com.ebanking.ClientService.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class ClientTransferOperationServiceImpl implements  ClientTransferOperationService{
@@ -24,10 +28,44 @@ public class ClientTransferOperationServiceImpl implements  ClientTransferOperat
     TransferClient transferClient;
     @Autowired
     WalletRepository walletRepository;
+    @Autowired
+    CustomerRepository customerRepository;
+    @Autowired
+    ExternalNotificationService externalNotificationService;
+    public static String generate4DigitNumber() {
+        // Generate a random 4-digit number
+        Random random = new Random();
+        int randomValue = 1000 + random.nextInt(9000);
+
+        // Convert the number to a string and return
+        return String.valueOf(randomValue);
+    }
+    @Override
+    public void sendOTP(Long customerID) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(customerID);
+
+        if (optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+
+            // Generate OTP
+            String otp = generate4DigitNumber();
+            customer.setOtp(otp);
+
+            // Send OTP through external notification service
+            externalNotificationService.verifyIdentity(customer.getPhone(), otp);
+
+            // Save the updated customer entity with OTP
+            customerRepository.save(customer);
+        } else {
+
+            System.out.println("Customer not found for ID: " + customerID);
+        }
+    }
     @Override
     public void markAsToServe(TransferEntity transfer) {
 
     }
+
 
     @Override
     public ServeTransferResponse markAsServed(TransferWithdrawRequest transferWithdrawRequest) {
@@ -54,21 +92,20 @@ public class ClientTransferOperationServiceImpl implements  ClientTransferOperat
                     }
 
                     if (Objects.equals(transfer.getPINCode(), transferWithdrawRequest.getPin())) {
-//
-//                        if (transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
-//
-//                            double deductedAmount = transfer.getAmount();
-//
-//                            // Assuming a transfer has one wallet (update based on your specific scenario)
-//                            Wallet wallet = transfer.getWallet();
-//
-//                            // Deduct the amount from the wallet balance
-//                            double newBalance = wallet.getBalance() - deductedAmount;
-//                            wallet.setBalance(newBalance);
-//
-//                            // Update the wallet in the database
-//                            walletRepository.save(wallet);
-//                        }
+
+                        if (transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
+                            double deductedAmount = transfer.getAmount();
+
+                            // Assuming a transfer has one wallet (update based on your specific scenario)
+                            Wallet wallet = transfer.getWallet();
+
+                            // Deduct the amount from the wallet balance
+                            double newBalance = wallet.getBalance() - deductedAmount;
+                            wallet.setBalance(newBalance);
+
+                            // Update the wallet in the database
+                            walletRepository.save(wallet);
+                        }
 
 
 
@@ -116,6 +153,8 @@ public class ClientTransferOperationServiceImpl implements  ClientTransferOperat
             return ServeTransferResponse.builder().message("Reference is incorrect, try another").isServed(false).build();
         }
     }
+
+
 
 
 

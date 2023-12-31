@@ -27,37 +27,25 @@ public class NotificationsServcieImpl implements NotificationsServcie {
 
     @Override
     public String sendSMS(SMS sms) {
-        List<TextMessage> messages = createSMSMessages(sms);
-
-        List<String> results = new ArrayList<>();
-        for (TextMessage message : messages) {
+        try {
+            TextMessage message = createSingleSMSMessage(sms);
             SmsSubmissionResponse response = vonageClient.getSmsClient().submitMessage(message);
+
             if (response.getMessages().get(0).getStatus() == MessageStatus.OK) {
-                results.add("Message sent successfully to " + message.getTo());
+                return "Message sent successfully to " + sms.getPhone();
             } else {
-                results.add("Error with sending the message to " + message.getTo() + ": " +
-                        response.getMessages().get(0).getErrorText());
+                return "Error with sending the message to " + sms.getPhone();
             }
-        }
-
-        return String.join("\n", results);
-    }
-
-    private List<TextMessage> createSMSMessages(SMS sms) {
-        if (sms.getTransferType() == TransferType.WALLET_TO_GAB || sms.getTransferType() == TransferType.BANK_TO_GAB) {
-            return sms.getBeneficiaries().stream()
-                    .map(beneficiary -> createSingleSMSMessage(sms, beneficiary))
-                    .collect(Collectors.toList());
-        } else {
-            // Handle other transfer types
-            throw new UnsupportedOperationException("Unsupported transfer type");
+        } catch (Exception e) {
+            e.printStackTrace(); // Add proper logging here
+            return "Error occurred: " + e.getMessage();
         }
     }
 
-    private TextMessage createSingleSMSMessage(SMS sms, Beneficiary beneficiary) {
+    private TextMessage createSingleSMSMessage(SMS sms) {
         String depositInfo = String.format("%s %s a déposé un montant de %.2f DH au GAB au profit de %s %s",
-                sms.getCustomer().getFirstName(), sms.getCustomer().getLastname(),
-                sms.getAmount(), beneficiary.getFirstName(), beneficiary.getLastName());
+                sms.getCustomerFirstName(), sms.getCustomerLastName(),
+                sms.getAmount(), sms.getBeneficiaryFirstName(), sms.getBeneficiaryLastName()); // Fix the typo here
 
         String messageText;
         if (sms.getSendRef()) {
@@ -67,9 +55,8 @@ public class NotificationsServcieImpl implements NotificationsServcie {
             messageText = String.format("%s. Veuillez utiliser le code de retrait %s.", depositInfo, sms.getPin());
         }
 
-        return new TextMessage(BRAND_NAME, beneficiary.getPhone(), messageText);
+        return new TextMessage(BRAND_NAME, sms.getPhone(), messageText);
     }
-
 
     @Override
     public SendVerificationCodeResponse verifyIdentity(String phone, String code) {

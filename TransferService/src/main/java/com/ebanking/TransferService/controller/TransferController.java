@@ -7,10 +7,14 @@ import com.ebanking.TransferService.model.TransferResponse;
 import com.ebanking.TransferService.service.TransferService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +31,7 @@ public class TransferController {
     }
 
     @PostMapping("/initiate")
-    public ResponseEntity<TransferResponse> initiateTransfer(@RequestBody TransferRequest transferRequest) throws JsonProcessingException {
+    public ResponseEntity<TransferResponse> initiateTransfer(@RequestBody TransferRequest transferRequest) throws IOException {
 
         return ResponseEntity.ok(transferService.initiateTransfer(transferRequest));
     }
@@ -58,6 +62,30 @@ public class TransferController {
 
         transferService.blockTransfer(transferId);
         return ResponseEntity.ok("Transfer is blocked successfully");
+    }
+    @GetMapping("/downloadPDF/{transferId}")
+    public ResponseEntity<ByteArrayResource> downloadTransferReceipt(@PathVariable Long transferId) {
+        // Get the PDF bytes from the service
+        byte[] pdfBytes = transferService.getTransferReceipt(transferId);
+
+        if (pdfBytes != null) {
+            // Create a ByteArrayResource
+            ByteArrayResource resource = new ByteArrayResource(pdfBytes);
+
+            // Set headers for the response
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transfer-receipt.pdf");
+
+            // Return ResponseEntity with ByteArrayResource, headers, and content type
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(resource);
+        } else {
+            // Handle the case when PDF bytes are not available or TransferEntity is not found
+            // For example, return an appropriate error response
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

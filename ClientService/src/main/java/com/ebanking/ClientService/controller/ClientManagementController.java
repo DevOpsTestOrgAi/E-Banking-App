@@ -155,7 +155,7 @@ public class ClientManagementController {
         FindCustomerByPhoneResponse response = clientManagementService.checkCustomerSironeStatusAndGetIt(checkCustomerStatusByPhoneRequest.getTel());
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/test")
+    @GetMapping("/")
     public String test() {
         return "fuck you";
     }

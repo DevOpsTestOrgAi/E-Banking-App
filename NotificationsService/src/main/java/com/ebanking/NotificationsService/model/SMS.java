@@ -19,12 +19,11 @@ public class SMS {
     private  double  amount  ;
     private  String pin ;
     private  String ref ;
-    private List<Beneficiary> beneficiaries;
+    private String phone;
     private  Boolean sendRef ;
-
-    private Customer customer;
-
-
-
+    private  String customerFirstName;
+    private  String customerLastName;
+    private  String beneficiaryFirstName;
+    private  String beneficiaryLastName;
 
 }

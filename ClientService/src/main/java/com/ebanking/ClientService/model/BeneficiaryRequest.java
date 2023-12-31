@@ -18,4 +18,5 @@ public class BeneficiaryRequest {
     private String phone;
     private String rib;
     private String cin;
+
 }

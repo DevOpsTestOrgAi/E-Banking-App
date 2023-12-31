@@ -31,7 +31,10 @@ public class TransferEntity {
     private int maxPIN_Attempts;
     private int validationDuration;
     private String initiatedAt ;
-
+    private  String  receiptUrl;  // change this and store  a binary  pdf
+    @Lob
+    private byte[] pdfContent;
+    private Long benefeicaryID   ;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

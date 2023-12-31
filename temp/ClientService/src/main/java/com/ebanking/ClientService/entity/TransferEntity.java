@@ -2,6 +2,7 @@ package com.ebanking.ClientService.entity;
 
 import com.ebanking.ClientService.model.TransferState;
 import com.ebanking.ClientService.model.TransferType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties("beneficiaries")
 public class TransferEntity {
 
     @Id
@@ -27,15 +29,13 @@ public class TransferEntity {
     private String toBeServedFrom;
     private String PINCode;
     private int maxPIN_Attempts;
-
     private int validationDuration;
+    private String initiatedAt ;
+
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
-
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL)
-    private List<Beneficiary> beneficiaries;
 
     private String motif;
 
@@ -45,5 +45,11 @@ public class TransferEntity {
     @Enumerated(EnumType.STRING)
     private TransferType type;
 
+    @OneToOne
+    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("transfer")
+    private Wallet wallet;
 
+    @OneToMany(mappedBy = "transferEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Beneficiary> beneficiaries;
 }

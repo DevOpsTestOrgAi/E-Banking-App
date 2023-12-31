@@ -6,6 +6,7 @@ import com.ebanking.TransferService.model.TransferRequest;
 import com.ebanking.TransferService.model.TransferResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,7 +64,7 @@ public interface TransferService {
 //    void unblockTransfer(String transferId);
 //    /*
 //
-TransferResponse initiateTransfer(TransferRequest transferRequest) throws JsonProcessingException;
+TransferResponse initiateTransfer(TransferRequest transferRequest) throws IOException;
 void serveTransfer( Long transferID);
 Optional<TransferEntity> getTransferByRef(String ref );
 
@@ -71,5 +72,5 @@ void updateMaxPINAttempts(Long transferId, int newMaxPINAttempts);
 void blockTransfer(Long transferId);
 
 
-
+    byte[] getTransferReceipt(Long transferId);
 }

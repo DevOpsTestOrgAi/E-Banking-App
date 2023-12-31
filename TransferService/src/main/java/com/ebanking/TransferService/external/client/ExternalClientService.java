@@ -3,6 +3,8 @@ package com.ebanking.TransferService.external.client;
 import com.ebanking.TransferService.entity.Beneficiary;
 import com.ebanking.TransferService.entity.Customer;
 import com.ebanking.TransferService.entity.Wallet;
+import com.ebanking.TransferService.model.AddBeneficiaryResponse;
+import com.ebanking.TransferService.model.BeneficiaryRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@FeignClient(name = "CLIENT-SERVICE", url = "http://192.168.0.186:8087/api/client")
+@FeignClient(name = "CLIENT-SERVICE", url = "http://client-service-svc/api/client")
 public interface ExternalClientService {
     @PostMapping("/addToBlackListByCin")
     public ResponseEntity<String> addToBlackListByCin(@RequestParam String cin, @RequestParam String reason);
@@ -38,6 +40,9 @@ public interface ExternalClientService {
      ResponseEntity<Customer> updateCustomerToCustomerID(
             @PathVariable long customerID,
             @RequestParam long customerToCustomerID);
+    @PostMapping("/addBeneficiary")
+     ResponseEntity<AddBeneficiaryResponse> addBeneficiary(@RequestBody BeneficiaryRequest beneficiaryRequest);
+
 
 
 }

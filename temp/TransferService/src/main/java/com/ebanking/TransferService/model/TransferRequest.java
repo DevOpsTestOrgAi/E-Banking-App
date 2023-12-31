@@ -1,7 +1,6 @@
 package com.ebanking.TransferService.model;
 
 import com.ebanking.TransferService.entity.Beneficiary;
-import com.ebanking.TransferService.entity.Customer;
 import lombok.*;
 
 import java.util.List;
@@ -13,17 +12,26 @@ import java.util.List;
 public class TransferRequest {
 
     private String reference;
+    private List<Double> amounts;
     private double amount;
     private double maxBAmountPeriodC;
     private int maxTransfersPerCustomer;
     private String toBeServedFrom;
     private String PINCode;
     private int validationDuration;
-    private Customer customer; // Assuming you want to reference the customer by ID
-    private List<Beneficiary> beneficiaries;
+    private  BeneficiaryRequest beneficiaryRequest;
+
+    private Long customerID;
+//    private List<Beneficiary> beneficiaries;
     private String motif;
     private TransferState state;
     private TransferType type;
+    private String otp;
+    private  Boolean isNotificationsSendingChosen;
+    private FeeType feeType;
+    private List<Long> beneficiaries_ids;
+    private Boolean isInitiatedFromMobile ;
+
 
     // Constructors, getters, setters...
 }

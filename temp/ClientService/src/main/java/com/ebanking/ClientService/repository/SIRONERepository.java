@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface SIRONERepository extends JpaRepository<SIRONE,Long> {
     Optional<SIRONE> findByCin(String cin);
     Optional<SIRONE> findByRib(String rib);
+    Optional<SIRONE> findByPhone(String rib);
+
 }

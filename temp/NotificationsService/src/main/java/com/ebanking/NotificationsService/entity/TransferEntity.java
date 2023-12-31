@@ -1,0 +1,55 @@
+package com.ebanking.NotificationsService.entity;
+
+import com.ebanking.NotificationsService.model.TransferState;
+import com.ebanking.NotificationsService.model.TransferType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@JsonIgnoreProperties("beneficiaries")
+public class TransferEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String reference;
+    private double amount;
+    private double maxBAmountPeriodC;
+    private int maxTransfersPerCustomer;
+    private String toBeServedFrom;
+    private String PINCode;
+    private int maxPIN_Attempts;
+    private int validationDuration;
+    private String initiatedAt ;
+
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
+
+    private String motif;
+
+    @Enumerated(EnumType.STRING)
+    private TransferState state;
+
+    @Enumerated(EnumType.STRING)
+    private TransferType type;
+
+    @OneToOne
+    @JoinColumn(name = "wallet_id", referencedColumnName = "id")
+    @JsonIgnoreProperties("transfer")
+    private Wallet wallet;
+
+    @OneToMany(mappedBy = "transferEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Beneficiary> beneficiaries;
+}

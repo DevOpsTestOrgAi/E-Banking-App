@@ -19,6 +19,8 @@ public class TransferRequest {
     private String toBeServedFrom;
     private String PINCode;
     private int validationDuration;
+    private  BeneficiaryRequest beneficiaryRequest;
+
     private Long customerID;
 //    private List<Beneficiary> beneficiaries;
     private String motif;
@@ -28,6 +30,7 @@ public class TransferRequest {
     private  Boolean isNotificationsSendingChosen;
     private FeeType feeType;
     private List<Long> beneficiaries_ids;
+    private Boolean isInitiatedFromMobile ;
 
 
     // Constructors, getters, setters...

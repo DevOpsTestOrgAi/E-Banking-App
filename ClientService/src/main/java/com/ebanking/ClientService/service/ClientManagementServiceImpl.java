@@ -283,35 +283,50 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
     @Override
     public AddBeneficiaryResponse addBeneficiary(BeneficiaryRequest beneficiaryRequest) {
         // Retrieve the customer by ID
-        Customer customer = customerRepository.findById(beneficiaryRequest.getCustomerID())
-                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + beneficiaryRequest.getCustomerID()));
+//        Customer customer = customerRepository.findById(beneficiaryRequest.getCustomerID())
+//                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + beneficiaryRequest.getCustomerID()));
+//
+//        // Check if the beneficiary with the given rib already exists
+//        Optional<Wallet> wallet = walletRepository.findByRib(beneficiaryRequest.getRib());
+//        if (wallet.isPresent()) {
+//            // Check if the rib is blacklisted
+//            Optional<SIRONE> blacklistedRib = sironRepository.findByRib(beneficiaryRequest.getRib());
+//            if (blacklistedRib.isEmpty()) {
+//                // Create a new beneficiary
+//                Beneficiary beneficiary = Beneficiary.builder()
+//                        .firstName(beneficiaryRequest.getFirstName())
+//                        .lastName(beneficiaryRequest.getLastName())
+//                        .phone(beneficiaryRequest.getPhone())
+//                        .rib(beneficiaryRequest.getRib())
+//                        .cin(beneficiaryRequest.getCin())
+//                        .customer(customer)
+//                        .build();
+//
+//                // Save the beneficiary
+//                beneficiaryRepository.save(beneficiary);
+//
+//                return AddBeneficiaryResponse.builder().message("Beneficiary added successfully").isAdded(true).build();
+//            } else {
+//                return AddBeneficiaryResponse.builder().message("Rib is blacklisted").isAdded(false).build();
+//            }
+//        } else {
+//            return AddBeneficiaryResponse.builder().message("RIB invalide !!").isAdded(false).build();
+//        }
+        Beneficiary beneficiary=Beneficiary.builder()
+                .cin(beneficiaryRequest.getCin())
+                .phone(beneficiaryRequest.getPhone())
+                .firstName(beneficiaryRequest.getFirstName())
+                .lastName(beneficiaryRequest.getLastName())
+                .customerID(beneficiaryRequest.getCustomerID())
+                .build();
+        Beneficiary bn =beneficiaryRepository.save(beneficiary);
+        return  AddBeneficiaryResponse.builder()
+                .id(bn.getId())
+                .message("beneficiary is added successfully")
+                .build();
 
-        // Check if the beneficiary with the given rib already exists
-        Optional<Wallet> wallet = walletRepository.findByRib(beneficiaryRequest.getRib());
-        if (wallet.isPresent()) {
-            // Check if the rib is blacklisted
-            Optional<SIRONE> blacklistedRib = sironRepository.findByRib(beneficiaryRequest.getRib());
-            if (blacklistedRib.isEmpty()) {
-                // Create a new beneficiary
-                Beneficiary beneficiary = Beneficiary.builder()
-                        .firstName(beneficiaryRequest.getFirstName())
-                        .lastName(beneficiaryRequest.getLastName())
-                        .phone(beneficiaryRequest.getPhone())
-                        .rib(beneficiaryRequest.getRib())
-                        .cin(beneficiaryRequest.getCin())
-                        .customer(customer)
-                        .build();
 
-                // Save the beneficiary
-                beneficiaryRepository.save(beneficiary);
 
-                return AddBeneficiaryResponse.builder().message("Beneficiary added successfully").isAdded(true).build();
-            } else {
-                return AddBeneficiaryResponse.builder().message("Rib is blacklisted").isAdded(false).build();
-            }
-        } else {
-            return AddBeneficiaryResponse.builder().message("RIB invalide !!").isAdded(false).build();
-        }
     }
     @Override
     public List<Beneficiary> getBeneficiariesByCustomerId(Long customerId) {
