@@ -32,4 +32,8 @@ public class NotificationsController {
 
         return notificationsServcie.test(customer);
     }
+         @GetMapping("/testNotif")
+    public String test() {
+        return "Ana ankikek ya mhamed";
+    }
 }

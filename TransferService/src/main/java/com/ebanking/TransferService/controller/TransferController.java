@@ -87,5 +87,10 @@ public class TransferController {
             return ResponseEntity.notFound().build();
         }
     }
+      @GetMapping("/test")
+    public String test() {
+        return "Ana ankikek ya issam";
+    }
+
 
 }
