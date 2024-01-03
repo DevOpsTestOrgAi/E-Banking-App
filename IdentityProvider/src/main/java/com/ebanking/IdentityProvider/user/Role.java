@@ -10,37 +10,31 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.ebanking.IdentityProvider.user.Permission.ADMIN_CREATE;
-import static com.ebanking.IdentityProvider.user.Permission.ADMIN_DELETE;
-import static com.ebanking.IdentityProvider.user.Permission.ADMIN_READ;
-import static com.ebanking.IdentityProvider.user.Permission.ADMIN_UPDATE;
-import static com.ebanking.IdentityProvider.user.Permission.MANAGER_CREATE;
-import static com.ebanking.IdentityProvider.user.Permission.MANAGER_DELETE;
-import static com.ebanking.IdentityProvider.user.Permission.MANAGER_READ;
-import static com.ebanking.IdentityProvider.user.Permission.MANAGER_UPDATE;
+import static com.ebanking.IdentityProvider.user.Permission.*;
+
 
 @RequiredArgsConstructor
 public enum Role {
 
-  USER(Collections.emptySet()),
-  ADMIN(
+  WALLET(Collections.emptySet()),
+  BACK_OFFICE(
           Set.of(
-                  ADMIN_READ,
-                  ADMIN_UPDATE,
-                  ADMIN_DELETE,
-                  ADMIN_CREATE,
-                  MANAGER_READ,
-                  MANAGER_UPDATE,
-                  MANAGER_DELETE,
-                  MANAGER_CREATE
+                  BACK_OFFICE_READ,
+                  BACK_OFFICE_UPDATE,
+                  BACK_OFFICE_DELETE,
+                  BACK_OFFICE_CREATE
           )
   ),
-  MANAGER(
+  AGENT(
           Set.of(
-                  MANAGER_READ,
-                  MANAGER_UPDATE,
-                  MANAGER_DELETE,
-                  MANAGER_CREATE
+                  BACK_OFFICE_READ,
+                  BACK_OFFICE_UPDATE,
+                  BACK_OFFICE_DELETE,
+                  BACK_OFFICE_CREATE,
+                  AGENT_READ,
+                  AGENT_UPDATE,
+                  AGENT_DELETE,
+                  AGENT_CREATE
           )
   )
 
