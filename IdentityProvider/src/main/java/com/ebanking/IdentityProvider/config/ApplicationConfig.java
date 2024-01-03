@@ -1,5 +1,7 @@
 package com.ebanking.IdentityProvider.config;
 
+import com.ebanking.IdentityProvider.auditing.ApplicationAuditAware;
+import com.ebanking.IdentityProvider.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

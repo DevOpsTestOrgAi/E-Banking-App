@@ -1,6 +1,6 @@
 package com.ebanking.IdentityProvider.config;
 
-import com.ensa.security.user.UserRepository;
+import com.ebanking.IdentityProvider.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

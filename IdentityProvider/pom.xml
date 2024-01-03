@@ -11,7 +11,7 @@
 	<groupId>com.ebanking</groupId>
 	<artifactId>IdentityProvider</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>security</name>
+	<name>IDENTITY-PROVIDER</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>

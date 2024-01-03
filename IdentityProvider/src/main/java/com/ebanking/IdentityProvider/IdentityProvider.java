@@ -27,7 +27,7 @@ public class IdentityProvider {
 					.lastname("admin")
 					.email("admin@mail.com")
 					.password("admin")
-					.role(Role.ADMIN)
+					.role(Role.BACK_OFFICE)
 					.build();
 			System.out.println("Admin token: " + service.register(admin).getAccessToken());
 
@@ -36,7 +36,7 @@ public class IdentityProvider {
 					.lastname("manager")
 					.email("manager@mail.com")
 					.password("manager")
-					.role(Role.MANAGER)
+					.role(Role.AGENT)
 					.build();
 			System.out.println("Manager token: " + service.register(manager).getAccessToken());
 

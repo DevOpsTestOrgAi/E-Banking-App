@@ -14,7 +14,7 @@ spring:
   application:
     name: NOTIFICATION-SERVICE
   config:
-    import: configserver:http://localhost:9296
+    import: configserver:http://localhost:9298
   circuitbreaker:
     instances:
       external:

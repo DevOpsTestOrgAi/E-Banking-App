@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-@FeignClient("IDENTITYPROVIDER/api/v1/posts")
+@FeignClient("IDENTITY-PROVIDER/api/v1/auth")
 public interface FeignAuthInterface {
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(

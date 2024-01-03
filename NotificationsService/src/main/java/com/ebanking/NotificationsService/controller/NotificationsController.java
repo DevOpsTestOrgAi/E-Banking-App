@@ -7,8 +7,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("api/v1/notifications")
 public class NotificationsController {
     @Autowired
     NotificationsServcie notificationsServcie  ;
@@ -27,5 +29,11 @@ public class NotificationsController {
     ) throws JsonProcessingException {
 
         return notificationsServcie.test(customer);
+    }
+
+    // Todo: Remove this method later
+    @GetMapping("/testMe")
+    public List<String> getNotificationsTestAuth() throws JsonProcessingException {
+        return List.of("It Works!");
     }
 }

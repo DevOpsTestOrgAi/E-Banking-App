@@ -2,8 +2,8 @@ package com.ebanking.CloudGateway.filters;
 
 import com.ebanking.CloudGateway.feignClients.FeignAuthInterface;
 import com.ebanking.IdentityProvider.auth.AuthenticationRequest;
-import com.ensa.apigateway.utils.JwtUtil;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 @AllArgsConstructor
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
     private RouteValidator validator;
+    @Autowired
     private final FeignAuthInterface feignAuthInterface;
     public AuthenticationFilter() {
         super(Config.class);

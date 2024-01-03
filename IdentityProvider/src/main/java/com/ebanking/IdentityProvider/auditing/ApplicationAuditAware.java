@@ -1,6 +1,6 @@
 package com.ebanking.IdentityProvider.auditing;
 
-import com.ensa.security.user.User;
+import com.ebanking.IdentityProvider.user.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
