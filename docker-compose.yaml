@@ -6,6 +6,6 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=e-banking
+      - MYSQL_DATABASE=banking
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql

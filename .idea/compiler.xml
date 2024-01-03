@@ -10,6 +10,7 @@
         <module name="NotificationsService" />
         <module name="TransferService" />
         <module name="ClientService" />
+        <module name="IdentityProvider" />
         <module name="ConfigServer" />
         <module name="service-registry" />
         <module name="CloudGateway" />
@@ -24,6 +25,7 @@
       <module name="ClientService" options="-parameters" />
       <module name="CloudGateway" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
+      <module name="IdentityProvider" options="" />
       <module name="NotificationsService" options="-parameters" />
       <module name="TransferService" options="-parameters" />
       <module name="identity-provider" options="-parameters" />
