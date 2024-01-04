@@ -25,7 +25,7 @@
       <module name="ClientService" options="" />
       <module name="CloudGateway" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
-      <module name="IdentityProvider" options="" />
+      <module name="IdentityProvider" options="-parameters" />
       <module name="NotificationsService" options="-parameters" />
       <module name="TransferService" options="-parameters" />
       <module name="identity-provider" options="-parameters" />

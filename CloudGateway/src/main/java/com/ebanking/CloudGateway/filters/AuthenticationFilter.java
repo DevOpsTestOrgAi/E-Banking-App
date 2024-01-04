@@ -16,8 +16,7 @@ import org.springframework.web.client.RestTemplate;
 @AllArgsConstructor
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
     private RouteValidator validator;
-    @Autowired
-    private final FeignAuthInterface feignAuthInterface;
+    private FeignAuthInterface feignAuthInterface;
     public AuthenticationFilter() {
         super(Config.class);
     }

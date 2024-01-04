@@ -17,7 +17,7 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
   application:
-    name: IDENTITY-PROVIDER
+    name: Identity-Provider
 
 application:
   security:
@@ -29,12 +29,11 @@ application:
 
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
-    fetch-registry: true
     register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
-  zipkin:
-    baseUrl: http://zipkin-svc:9411
+      defaultZone: http://${EUREKA_SERVER_ADDRESS:localhost}:8761/eureka
+logging:
+  level:
+    com.netflix.eureka: DEBUG
