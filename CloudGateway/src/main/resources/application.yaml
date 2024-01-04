@@ -39,3 +39,15 @@ spring:
                 name: NOTIFICATION-SERVICE
                 fallbackuri: forward:/notificationServiceFallBack
 
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
+  zipkin:
+    baseUrl: http://zipkin-svc:9411
+
+debug: true
