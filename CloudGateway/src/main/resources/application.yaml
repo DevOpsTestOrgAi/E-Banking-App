@@ -5,7 +5,7 @@ spring:
   application:
     name: API-GATEWAY
   config:
-    import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:9298}
   cloud:
     gateway:
       routes:
@@ -14,9 +14,20 @@ spring:
           predicates:
             - Path=/api/v1/order/**
           filters:
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: TRANSFER-SERVICE
+                fallbackuri: forward:/transferServiceFallBack
+
+        - id: IDENTITY-PROVIDER
+          uri: lb://IDENTITY-PROVIDER
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: IDENTITY-PROVIDER
                 fallbackuri: forward:/transferServiceFallBack
 
         - id: CLIENT-SERVICE
@@ -24,6 +35,7 @@ spring:
           predicates:
             - Path=/api/v1/client/**
           filters:
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: CLIENT-SERVICE
@@ -34,20 +46,18 @@ spring:
           predicates:
             - Path=/api/v1/notifications/**
           filters:
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: NOTIFICATION-SERVICE
                 fallbackuri: forward:/notificationServiceFallBack
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
-    fetch-registry: true
     register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
-  zipkin:
-    baseUrl: http://zipkin-svc:9411
-
-debug: true
+      defaultZone: http://${EUREKA_SERVER_ADDRESS:localhost}:8761/eureka
+logging:
+  level:
+    com.netflix.eureka: DEBUG

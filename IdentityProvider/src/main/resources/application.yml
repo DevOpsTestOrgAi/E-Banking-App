@@ -17,7 +17,7 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
   application:
-    name: Identity-Provider
+    name: IDENTITY-PROVIDER
 
 application:
   security:

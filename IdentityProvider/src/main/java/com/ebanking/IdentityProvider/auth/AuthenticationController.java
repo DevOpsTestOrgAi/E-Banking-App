@@ -1,8 +1,10 @@
 package com.ebanking.IdentityProvider.auth;
 
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.auth.AuthenticationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,11 +31,11 @@ public class AuthenticationController {
   }
 
   @GetMapping("/validate-token")
-  public ResponseEntity<Void> validateToken(@RequestParam String token) {
+  public ResponseEntity<Void> validateToken(@RequestParam String token) throws IllegalAccessException {
     if (service.validateToken(token)) {
       return ResponseEntity.ok().build();
     } else {
-      return ResponseEntity.badRequest().build();
+      throw new IllegalAccessException("Token is invalid");
     }
   }
 
