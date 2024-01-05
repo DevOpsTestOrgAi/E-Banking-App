@@ -17,12 +17,6 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
     private final RestTemplate restTemplate;
-    //private FeignAuthInterface feignAuthInterface;
-
-//    @Autowired
-//    public void setFeignAuthInterface(FeignAuthInterface feignAuthInterface) {
-//        this.feignAuthInterface = feignAuthInterface;
-//    }
 
     public AuthenticationFilter(RestTemplate restTemplate) {
         super(Config.class);
