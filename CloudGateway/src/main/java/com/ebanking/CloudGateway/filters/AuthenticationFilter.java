@@ -9,6 +9,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +17,12 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
     private final RestTemplate restTemplate;
+    //private FeignAuthInterface feignAuthInterface;
+
+//    @Autowired
+//    public void setFeignAuthInterface(FeignAuthInterface feignAuthInterface) {
+//        this.feignAuthInterface = feignAuthInterface;
+//    }
 
     public AuthenticationFilter(RestTemplate restTemplate) {
         super(Config.class);
@@ -37,7 +44,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             try {
                 // REST call to AUTH service using RestTemplate
                 restTemplate.getForObject("http://localhost:8080/api/v1/auth/validate-token?token=" + authHeader, Void.class);
-
+                //feignAuthInterface.validateToken(authHeader);
                 System.out.println("Auth token: " + authHeader);
             } catch (Exception e) {
                 System.out.println("invalid access...!");
