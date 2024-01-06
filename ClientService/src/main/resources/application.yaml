@@ -1,9 +1,10 @@
 server:
   port: 8087
+  address: 192.168.0.52
 
 spring:
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/boa_db
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/banking?createDatabaseIfNotExist=true
     username: root
     password: ENSA2023
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -26,10 +27,10 @@ spring:
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
         sliding-window-type: COUNT_BASED
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: "default"
-topic:
-  name: t.client-transfer
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    consumer:
+#      group-id: "default"
+#topic:
+#  name: t.client-transfer
 

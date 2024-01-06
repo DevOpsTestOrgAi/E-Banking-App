@@ -1,4 +1,4 @@
-package com.ebanking.NotificationsService.model;
+package com.ebanking.TransferService.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Beneficiary {
-     private String firstName  ;
-     private String lastName ;
-      private String phone  ;
+
+public class AddBeneficiaryResponse {
+    private String  message ;
+    private  Boolean isAdded ;
+    private  Long id ;
 
 
 }

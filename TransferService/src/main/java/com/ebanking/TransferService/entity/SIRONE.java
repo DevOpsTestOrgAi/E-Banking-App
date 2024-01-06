@@ -26,6 +26,8 @@ public class SIRONE {
     private String reason;
     private String rib;
     private Date birth;
+    private  String  phone  ;
+
 
     // Constructors, getters, setters...
 }

@@ -15,4 +15,5 @@ public class BlackListResponse {
     private Boolean isExists ;
     private Boolean isBlocked;
 
+
 }

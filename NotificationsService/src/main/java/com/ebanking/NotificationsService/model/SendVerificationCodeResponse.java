@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Builder
-public class VerificationCode {
+public class SendVerificationCodeResponse {
     private String code ;
+    private String message;
+
 
 }

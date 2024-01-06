@@ -1,9 +1,12 @@
 package com.ebanking.NotificationsService.model;
 
+import com.ebanking.NotificationsService.entity.Beneficiary;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -16,12 +19,11 @@ public class SMS {
     private  double  amount  ;
     private  String pin ;
     private  String ref ;
-    private  Beneficiary beneficiary;
+    private String phone;
     private  Boolean sendRef ;
-
-    private Customer customer;
-
-
-
+    private  String customerFirstName;
+    private  String customerLastName;
+    private  String beneficiaryFirstName;
+    private  String beneficiaryLastName;
 
 }
