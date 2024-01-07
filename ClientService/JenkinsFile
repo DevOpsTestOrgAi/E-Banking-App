@@ -77,7 +77,7 @@ pipeline {
                     echo "File content after sed:"
                     sh "cat ${manifestsDir}/clientservice-deployment.yml"
 
-                    withCredentials([usernamePassword(credentialsId: 'git', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    withCredentials([usernamePassword(credentialsId: 'Git', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                         dir(cloneDir) {
                             sh "git status"
                             sh "git add ."
