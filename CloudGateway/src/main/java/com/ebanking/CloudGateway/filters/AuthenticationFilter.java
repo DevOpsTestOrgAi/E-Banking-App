@@ -37,7 +37,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             }
             try {
                 // REST call to AUTH service using RestTemplate
-                restTemplate.getForObject("http://localhost:8080/api/v1/auth/validate-token?token=" + authHeader, Void.class);
+                restTemplate.getForObject("http://localhost:8080/api/v1/auth/validate-token?token=" + authHeader + "&route="+exchange.getRequest().getPath().value(), Void.class);
                 //feignAuthInterface.validateToken(authHeader);
                 System.out.println("Auth token: " + authHeader);
             } catch (Exception e) {

@@ -31,9 +31,12 @@ public class AuthenticationController {
   }
 
   @GetMapping("/validate-token")
-  public ResponseEntity<Void> validateToken(@RequestParam String token) throws IllegalAccessException {
+  public ResponseEntity<Void> validateToken(@RequestParam String token, @RequestParam String route) throws IllegalAccessException {
     if (service.validateToken(token)) {
-      return ResponseEntity.ok().build();
+      if(service.hasRightPermissions(token, route)) {
+        return ResponseEntity.ok().build();
+      }
+      throw new IllegalAccessException("Token is invalid");
     } else {
       throw new IllegalAccessException("Token is invalid");
     }

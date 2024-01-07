@@ -17,7 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
 
 @Service
 @RequiredArgsConstructor
@@ -120,4 +125,28 @@ public class AuthenticationService {
     Optional<User> user = this.repository.findByEmail(userEmail);
     return user.filter(value -> jwtService.isTokenValid(token, value)).isPresent();
   }
+
+    public boolean hasRightPermissions(String token, String route) {
+    boolean userHasRightPermissions = false;
+      String userEmail = jwtService.extractUsername(token);
+      Optional<User> user = this.repository.findByEmail(userEmail);
+      List<String> authorities = user.map(User::getAuthorities)
+              .orElse(Collections.emptyList())
+              .stream()
+              .map(GrantedAuthority::getAuthority)
+              .map(String::toUpperCase)
+              .toList();
+      for(String authority : authorities){
+        String roleName=authority.split(":")[0].toUpperCase();
+        String permissionName=authority.split(":")[1].toUpperCase();
+        if(route.toUpperCase().contains(roleName) || route.toUpperCase().contains(permissionName)){
+          userHasRightPermissions=true;
+          break;
+        }
+      }
+      System.out.println("Route: " + route);
+
+      System.out.println(user.get().getAuthorities());
+      return userHasRightPermissions;
+    }
 }
