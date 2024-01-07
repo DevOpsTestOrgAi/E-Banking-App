@@ -1,7 +1,6 @@
 package com.ebanking.TransferService.entity;
 
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

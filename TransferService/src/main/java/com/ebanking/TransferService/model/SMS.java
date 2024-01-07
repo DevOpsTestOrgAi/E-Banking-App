@@ -28,5 +28,6 @@ public class SMS {
     private  String beneficiaryFirstName;
     private  String beneficiaryLastName;
 
+
 }
 

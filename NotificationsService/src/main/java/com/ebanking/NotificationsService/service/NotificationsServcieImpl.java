@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationsServcieImpl implements NotificationsServcie {
 //    @Autowired
-////    Producer producer;
+//    Producer producer;
 
     private final VonageClient vonageClient = VonageClient.builder().apiKey("3073e7dc").apiSecret("ZCZVrdhhblXHWQq1").build();
     private final String BRAND_NAME = "Vonage APIs";
@@ -40,8 +40,8 @@ public class NotificationsServcieImpl implements NotificationsServcie {
             e.printStackTrace(); // Add proper logging here
             return "Error occurred: " + e.getMessage();
         }
-    }
-
+    } 
+//TODO : Add logic to send  indicate  from where the transfer in forwarded : TO ATM or BANK
     private TextMessage createSingleSMSMessage(SMS sms) {
         String depositInfo = String.format("%s %s a déposé un montant de %.2f DH au GAB au profit de %s %s",
                 sms.getCustomerFirstName(), sms.getCustomerLastName(),
@@ -72,7 +72,7 @@ public class NotificationsServcieImpl implements NotificationsServcie {
                     ).code(code).build();
         }
     }
-//
+
 //    @Override
 //    public String test(Customer customer) throws JsonProcessingException {
 //        return producer.sendMessage(customer);

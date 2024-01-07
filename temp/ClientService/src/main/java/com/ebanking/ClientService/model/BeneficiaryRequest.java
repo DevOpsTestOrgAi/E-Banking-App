@@ -1,5 +1,6 @@
 package com.ebanking.ClientService.model;
 
+import com.ebanking.ClientService.entity.TransferEntity;
 import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +19,5 @@ public class BeneficiaryRequest {
     private String phone;
     private String rib;
     private String cin;
-
+    private Long transferID ;
 }

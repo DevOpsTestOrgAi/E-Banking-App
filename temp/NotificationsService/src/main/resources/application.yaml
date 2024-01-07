@@ -32,5 +32,5 @@ spring:
 vonage:
   apiKey: 3073e7dc
   apiSecret: ZCZVrdhhblXHWQq1
-topic:
-  name: t.transfer-notifications-customer
+# topic:
+#   name: t.transfer-notifications-customer

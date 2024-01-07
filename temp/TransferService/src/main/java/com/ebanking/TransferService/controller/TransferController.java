@@ -2,6 +2,8 @@ package com.ebanking.TransferService.controller;
 
 import com.ebanking.TransferService.entity.Beneficiary;
 import com.ebanking.TransferService.entity.TransferEntity;
+import com.ebanking.TransferService.model.RestitutionTransferResponse;
+import com.ebanking.TransferService.model.TransferHistoriesResponse;
 import com.ebanking.TransferService.model.TransferRequest;
 import com.ebanking.TransferService.model.TransferResponse;
 import com.ebanking.TransferService.service.TransferService;
@@ -63,6 +65,12 @@ public class TransferController {
         transferService.blockTransfer(transferId);
         return ResponseEntity.ok("Transfer is blocked successfully");
     }
+    @PutMapping("/{transferId}/unblock")
+    public ResponseEntity<String> unblockTransfer(@PathVariable Long transferId) {
+
+        transferService.unblockTransfer(transferId);
+        return ResponseEntity.ok("Transfer is unblocked successfully");
+    }
     @GetMapping("/downloadPDF/{transferId}")
     public ResponseEntity<ByteArrayResource> downloadTransferReceipt(@PathVariable Long transferId) {
         // Get the PDF bytes from the service
@@ -85,6 +93,27 @@ public class TransferController {
             // Handle the case when PDF bytes are not available or TransferEntity is not found
             // For example, return an appropriate error response
             return ResponseEntity.notFound().build();
+        }
+    }
+    @GetMapping("/restitute/{transferId}")
+    public ResponseEntity<RestitutionTransferResponse> restitutionTransfer(@PathVariable Long transferId) {
+        RestitutionTransferResponse response = transferService.restitutionTransfer(transferId);
+
+            return ResponseEntity.ok(response);
+
+    }
+    @GetMapping("/getTransferHistory/{idNumber}")
+    public ResponseEntity<List<TransferHistoriesResponse>> getTransferHistoriesByCustomerId(
+            @PathVariable String idNumber) {
+        try {
+            List<TransferHistoriesResponse> histories = transferService.getTransferHistoriesByCustomerIdNumber(idNumber);
+            if (histories.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(histories);
+        } catch (Exception e) {
+            // Log the exception and return an appropriate error response
+            return ResponseEntity.internalServerError().body(null); // Update as needed based on your error handling strategy
         }
     }
 

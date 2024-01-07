@@ -10,6 +10,7 @@ import com.ebanking.ClientService.model.TransferState;
 import com.ebanking.ClientService.model.TransferWithdrawRequest;
 import com.ebanking.ClientService.model.ServeTransferResponse;
 import com.ebanking.ClientService.model.TransferType;
+import com.ebanking.ClientService.repository.BeneficiaryRepository;
 import com.ebanking.ClientService.repository.CustomerRepository;
 import com.ebanking.ClientService.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
 @Service
 public class ClientTransferOperationServiceImpl implements  ClientTransferOperationService{
+
     @Autowired
     TransferClient transferClient;
     @Autowired
@@ -32,6 +34,8 @@ public class ClientTransferOperationServiceImpl implements  ClientTransferOperat
     CustomerRepository customerRepository;
     @Autowired
     ExternalNotificationService externalNotificationService;
+    @Autowired
+    private BeneficiaryRepository beneficiaryRepository;
     public static String generate4DigitNumber() {
         // Generate a random 4-digit number
         Random random = new Random();
@@ -66,97 +70,138 @@ public class ClientTransferOperationServiceImpl implements  ClientTransferOperat
 
     }
 
-
     @Override
     public ServeTransferResponse markAsServed(TransferWithdrawRequest transferWithdrawRequest) {
-        ResponseEntity<TransferEntity> transferResponse = transferClient.getTransferByReference(transferWithdrawRequest.getRef());
+        try {
+            // Get the transfer by reference
+            ResponseEntity<TransferEntity> transferResponse = transferClient.getTransferByReference(transferWithdrawRequest.getRef());
 
-        if (transferResponse.getStatusCode() == HttpStatus.OK) {
+            // Check if the transfer response is not OK or the body is null, return a response with status 500
+            if (transferResponse.getStatusCode() != HttpStatus.OK || transferResponse.getBody() == null) {
+                return ServeTransferResponse.builder()
+                        .message(" Référence de transfert invalide")
+                        .isServed(false)
+                        .build();
+            }
+
             TransferEntity transfer = transferResponse.getBody();
 
-            if (transfer != null) {
-                // Check if the transfer has already been served or is in an invalid state
-                if (transfer.getState() == TransferState.SERVED || transfer.getState() == TransferState.EXTOURNED || transfer.getState() == TransferState.BLOCKED) {
-                    return ServeTransferResponse.builder().message("Transfer has already been served or is in an invalid state").isServed(false).build();
-                }
-
-                List<Beneficiary> beneficiaries = transferClient.getBeneficiariesByTransferId(transfer.getId());
-
-                if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_GAB
-                        || transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
-
-                    // Check if transfer is blocked
-                    if (transfer.getMaxPIN_Attempts() >= 5) {
-                        transferClient.blockTransfer(transfer.getId());
-                        return ServeTransferResponse.builder().message("Transfer is blocked due to exceeding maximum PIN attempts").isServed(false).build();
-                    }
-
-                    if (Objects.equals(transfer.getPINCode(), transferWithdrawRequest.getPin())) {
-
-                        if (transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
-                            double deductedAmount = transfer.getAmount();
-
-                            // Assuming a transfer has one wallet (update based on your specific scenario)
-                            Wallet wallet = transfer.getWallet();
-
-                            // Deduct the amount from the wallet balance
-                            double newBalance = wallet.getBalance() - deductedAmount;
-                            wallet.setBalance(newBalance);
-
-                            // Update the wallet in the database
-                            walletRepository.save(wallet);
-                        }
-
-
-
-                        // Mark the transfer as served
-                        transferClient.serveTransfer(transfer.getId());
-                        return ServeTransferResponse.builder().message("Transfer is served Successfully").isServed(true).build();
-                    } else {
-                        // Increment the PIN attempts counter
-                        int counter = transfer.getMaxPIN_Attempts() + 1;
-                        transfer.setMaxPIN_Attempts(counter);
-                        transferClient.updateMaxPINAttempts(transfer.getId(), counter);
-                        return ServeTransferResponse.builder().message("Incorrect PIN!").isServed(false).build();
-                    }
-
-                } else if (transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_BANK
-                        || transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_BANK) {
-
-                    Optional<Beneficiary> selectedBeneficiary = beneficiaries.stream()
-                            .filter(beneficiary -> transferWithdrawRequest.getCin().equals(beneficiary.getCin()))
-                            .findFirst();
-
-                    if (selectedBeneficiary.isPresent()) {
-                        // Deduct the amount from the customer's wallet balance
-                        double deductedAmount = transfer.getAmount();
-                        Wallet customerWallet = transfer.getCustomer().getWallets().get(0); // Assuming a customer has one wallet
-                        customerWallet.setBalance(customerWallet.getBalance() - deductedAmount);
-                        // Update the wallet in the database
-                        walletRepository.save(customerWallet);
-
-                        // Mark the transfer as served
-                        transferClient.serveTransfer(transfer.getId());
-                        return ServeTransferResponse.builder().message("Transfer is served Successfully").isServed(true).build();
-                    } else {
-                        return ServeTransferResponse.builder().message("CIN is Invalid!").isServed(false).build();
-                    }
-
-                } else {
-                    // Handle unexpected transfer type if necessary
-                    return ServeTransferResponse.builder().message("Invalid Transfer Type").isServed(false).build();
-                }
-            } else {
-                return ServeTransferResponse.builder().message("Invalid Transfer ID").isServed(false).build();
+            // Check if the transfer entity is null
+            if (transfer == null) {
+                return ServeTransferResponse.builder().message("Référence de transfert invalide").isServed(false).build();
             }
-        } else {
-            return ServeTransferResponse.builder().message("Reference is incorrect, try another").isServed(false).build();
+
+            // Check transfer state
+            switch (transfer.getState()) {
+                case SERVED -> {
+                    return ServeTransferResponse.builder().message("Le retrait a déjà été effectué.").isServed(false).build();
+                }
+                case EXTOURNED -> {
+                    return ServeTransferResponse.builder().message("Le transfert est extourné.").isServed(false).build();
+                }
+                case BLOCKED -> {
+                    return ServeTransferResponse.builder().message("Le transfert est bloqué.").isServed(false).build();
+                }
+                default -> {
+                    // Proceed with further processing if none of the above states
+                }
+            }
+
+            // Process based on transfer type
+            return processTransferType(transfer, transferWithdrawRequest);
+        } catch (Exception e) {
+            // Handle any exceptions that may occur
+            return ServeTransferResponse.builder()
+                    .message("Reference fourni est incorrect! ")
+                    .isServed(false)
+                    .build();
+        }
+    }
+
+    private ServeTransferResponse processTransferType(TransferEntity transfer, TransferWithdrawRequest transferWithdrawRequest) {
+        try {
+            // Process based on transfer type
+            if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_GAB ||
+                    transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
+
+                // GAB Transfer logic
+                return processGABTransfer(transfer, transferWithdrawRequest);
+            } else if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_BANK ||
+                    transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_BANK) {
+
+                // Bank Transfer logic
+                return processBankTransfer(transfer, transferWithdrawRequest);
+            } else {
+                return ServeTransferResponse.builder().message("Type de transfert inconnu").isServed(false).build();
+            }
+        } catch (Exception e) {
+            // Handle any exceptions that may occur during type-specific processing
+            return ServeTransferResponse.builder()
+                    .message("Reference fourni est incorrect! ")
+                    .isServed(false)
+                    .build();
+        }
+    }
+
+    private ServeTransferResponse processGABTransfer(TransferEntity transfer, TransferWithdrawRequest transferWithdrawRequest) {
+        try {
+            // GAB Transfer logic
+            if (transfer.getMaxPIN_Attempts() >= 7) {
+                transferClient.blockTransfer(transfer.getId());
+                return ServeTransferResponse.builder().message("Le transfert est bloqué en raison du dépassement du nombre maximum de tentatives de PIN").isServed(false).build();
+            }
+
+            if (Objects.equals(transferWithdrawRequest.getPin(), transfer.getPINCode()) && !transferWithdrawRequest.getPin().isEmpty()) {
+                transferClient.serveTransfer(transfer.getId());
+                return ServeTransferResponse.builder().transferID(transfer.getId()).message("Le retrait a été effectué avec succès").isServed(true).build();
+            } else {
+                int counter = transfer.getMaxPIN_Attempts() + 1;
+                transfer.setMaxPIN_Attempts(counter);
+                transferClient.updateMaxPINAttempts(transfer.getId(), counter);
+                return ServeTransferResponse.builder().message("PIN incorrect !").isServed(false).build();
+            }
+        } catch (Exception e) {
+            // Handle any exceptions that may occur during GAB transfer processing
+            return ServeTransferResponse.builder()
+                    .message("Reference fourni est incorrect! ")
+                    .isServed(false)
+                    .build();
+        }
+    }
+
+    private ServeTransferResponse processBankTransfer(TransferEntity transfer, TransferWithdrawRequest transferWithdrawRequest) {
+        try {
+            // Bank Transfer logic
+            Optional<Beneficiary> beneficiary = beneficiaryRepository.findByCinAndTransferID(
+                    transferWithdrawRequest.getCin(),
+                    transfer.getId()
+            );
+
+            if (beneficiary.isEmpty()) {
+                return ServeTransferResponse.builder().message("Le numéro d'identification est incorrect !").isServed(false).build();
+            }
+
+            Beneficiary b = beneficiary.get();
+            if (Objects.equals(transferWithdrawRequest.getCin(), b.getCin()) && transfer.getId() == b.getTransferID()) {
+                transferClient.serveTransfer(transfer.getId());
+                return ServeTransferResponse.builder().transferID(transfer.getId()).message("Le retrait a été effectué avec succès").isServed(true).build();
+            }
+
+            return ServeTransferResponse.builder().message("Les données fournies sont incorrectes").isServed(false).build();
+        } catch (Exception e) {
+            // Handle any exceptions that may occur during bank transfer processing
+            return ServeTransferResponse.builder()
+                    .message("La référence fournie est incorrecte !")
+                    .isServed(false)
+                    .build();
         }
     }
 
 
 
 
+
+//TODO-->  changeLOgs: Bank to Gab :  wallet to gab    : wallet to bank ,  bank to bank  : sending to benficiaries :  unknown :  data will be persisted in  Benefiary enity from it you can check for bank    Gab no need to check
 
     @Override
     public void cancelTransfer(TransferEntity transfer) {

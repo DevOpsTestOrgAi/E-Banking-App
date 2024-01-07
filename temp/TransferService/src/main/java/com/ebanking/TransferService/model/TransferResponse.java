@@ -18,5 +18,7 @@ public class TransferResponse {
     private String  message  ;
     private  Boolean isInitaited;
    private Long transferID;
+   private String ref  ;
+
 
 }

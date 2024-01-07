@@ -6,8 +6,8 @@ public enum TransferType {
     BANK_TO_BANK,
 
     WALLET_TO_GAB,
-    GAB_TO_WALLET,
-    GAB_TO_BANK,
+   // GAB_TO_WALLET,
+    //GAB_TO_BANK,
     BANK_TO_GAB,
-    MULTIPLE
+   // MULTIPLE
 }

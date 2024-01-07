@@ -158,36 +158,57 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
         kycRepository.save(
                 kycInput
         );
-        customer.setKyc(kycRepository.findByIdNumber(kyc.getIdNumber()));
+        Optional<KYC> kyc1=kycRepository.findByIdNumber(kyc.getIdNumber());
+        if(kyc1.isPresent()){
+            KYC kyc2 =kyc1.get();
+            customer.setKyc(kyc2);
+        }
+
     }
     public List<TransferEntity> getAllTransfers() {
         return transferRepository.findAll();
     }
     @Transactional
-    public Optional<Customer> updateKYCInformation(Long cin, KYC updatedKYC) {
-        Optional<Customer> optionalCustomer = customerRepository.findByCin(String.valueOf(cin));
+    public UpdateKYCResponse updateKYCInformation(String cin, KYC updatedKYC) {
+        Optional<Customer> optionalCustomer = customerRepository.findByCin(cin);
+        if(optionalCustomer.isPresent()){
+            Customer customer  = optionalCustomer.get();
+            KYC newKyc = KYC.builder()
+                    .id(customer.getKyc().getId()) // Existing ID
+                    .title(updatedKYC.getTitle())
+                    .firstName(updatedKYC.getFirstName())
+                    .lastName(updatedKYC.getLastName())
+                    .idType(updatedKYC.getIdType())
+                    .countryOfIssue(updatedKYC.getCountryOfIssue())
+                    .idNumber(updatedKYC.getIdNumber())
+                    .idExpirationDate(updatedKYC.getIdExpirationDate())
+                    .idValidityDate(updatedKYC.getIdValidityDate())
+                    .dateOfBirth(updatedKYC.getDateOfBirth())
+                    .profession(updatedKYC.getProfession())
+                    .nationality(updatedKYC.getNationality())
+                    .countryOfAddress(updatedKYC.getCountryOfAddress())
+                    .legalAddress(updatedKYC.getLegalAddress())
+                    .city(updatedKYC.getCity())
+                    .gsm(updatedKYC.getGsm())
+                    .email(updatedKYC.getEmail())
+                    // Assuming customer field should remain linked to the same customer
+                    .customer(customer)
+                    .build();
+            customer.setKyc(newKyc);
+            customerRepository.save(customer);
+            return UpdateKYCResponse.builder()
+                    .isUpdated(true)
+                    .message("KYC is updated")
+                    .build();
 
-        if (optionalCustomer.isPresent()) {
-            Customer customer = optionalCustomer.get();
-            KYC existingKYC = customer.getKyc();
-
-            // Check if KYC is not validated and ID is not expired
-            if (existingKYC != null && !isIdExpired(existingKYC.getIdExpirationDate())) {
-                // Update KYC information
-                updateKYCFields(existingKYC, updatedKYC);
-
-                // Save the updated KYC
-                kycRepository.save(existingKYC);
-
-                // Update the customer with the KYC
-                customer.setKyc(existingKYC);
-                customerRepository.save(customer);
-
-                return Optional.of(customer);
-            }
+        }else{
+            return UpdateKYCResponse.builder()
+                    .isUpdated(true)
+                    .message("KYC Not found ")
+                    .build();
         }
 
-        return Optional.empty();
+
     }
 
     private void updateKYCFields(KYC existingKYC, KYC updatedKYC) {
@@ -216,24 +237,37 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
         // Compare with the current date
         return LocalDate.now().isAfter(expirationDate);
     }
+@Override
+    public  AddKYCResponse addKYC(KYCRequest kycRequest) {
+        // adding the KYC object from teh request
+        Optional<KYC> kyc=kycRepository.findByIdNumber(kycRequest.getIdNumber());
+if(kyc.isEmpty()) {
+    KYC newKYC = buildKYCFromRequest(kycRequest);
+    KYC savedKYC = kycRepository.save(newKYC);
+    Customer customer = Customer.builder()
+            .cin(savedKYC.getIdNumber())
+            .customerType(CustomerType.PROSPECT)
+            .phone(savedKYC.getGsm())
+            .firstName(savedKYC.getFirstName())
+            .lastName(savedKYC.getLastName())
+            .kyc(savedKYC)
+            .build();
+    return AddKYCResponse.builder()
+            .isAdded(true)
+            .customer(customerRepository.save(customer))
+            .message(" Le client Prospect a été ajouté avec succès.")
+            .build();
 
-    public Optional<Customer> addKYC(Long customerId, KYCRequest kycRequest) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(customerId);
+}else
+{
+    return      AddKYCResponse.builder()
+        .isAdded(false)
 
-        if (optionalCustomer.isPresent()) {
-            Customer customer = optionalCustomer.get();
+        .message("  Un client existe déjà avec le numéro d'identification fourni.")
+        .build();
 
-            KYC newKYC = buildKYCFromRequest(kycRequest);
-            KYC savedKYC = kycRepository.save(newKYC);
+}
 
-            // Update the customer with the KYC
-            customer.setKyc(savedKYC);
-            customerRepository.save(customer);
-
-            return Optional.of(customer);
-        }
-
-        return Optional.empty();
     }
 
     private KYC buildKYCFromRequest(KYCRequest kycRequest) {
@@ -276,48 +310,19 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
     public Optional<Customer> getCustomerById(Long customerId) {
         return customerRepository.findById(customerId);
     }
-
+    @Override
     public Optional<Wallet> getWalletById(Long customerID) {
         return walletRepository.findByCustomerId(customerID);
     }
     @Override
     public AddBeneficiaryResponse addBeneficiary(BeneficiaryRequest beneficiaryRequest) {
-        // Retrieve the customer by ID
-//        Customer customer = customerRepository.findById(beneficiaryRequest.getCustomerID())
-//                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + beneficiaryRequest.getCustomerID()));
-//
-//        // Check if the beneficiary with the given rib already exists
-//        Optional<Wallet> wallet = walletRepository.findByRib(beneficiaryRequest.getRib());
-//        if (wallet.isPresent()) {
-//            // Check if the rib is blacklisted
-//            Optional<SIRONE> blacklistedRib = sironRepository.findByRib(beneficiaryRequest.getRib());
-//            if (blacklistedRib.isEmpty()) {
-//                // Create a new beneficiary
-//                Beneficiary beneficiary = Beneficiary.builder()
-//                        .firstName(beneficiaryRequest.getFirstName())
-//                        .lastName(beneficiaryRequest.getLastName())
-//                        .phone(beneficiaryRequest.getPhone())
-//                        .rib(beneficiaryRequest.getRib())
-//                        .cin(beneficiaryRequest.getCin())
-//                        .customer(customer)
-//                        .build();
-//
-//                // Save the beneficiary
-//                beneficiaryRepository.save(beneficiary);
-//
-//                return AddBeneficiaryResponse.builder().message("Beneficiary added successfully").isAdded(true).build();
-//            } else {
-//                return AddBeneficiaryResponse.builder().message("Rib is blacklisted").isAdded(false).build();
-//            }
-//        } else {
-//            return AddBeneficiaryResponse.builder().message("RIB invalide !!").isAdded(false).build();
-//        }
         Beneficiary beneficiary=Beneficiary.builder()
                 .cin(beneficiaryRequest.getCin())
                 .phone(beneficiaryRequest.getPhone())
                 .firstName(beneficiaryRequest.getFirstName())
                 .lastName(beneficiaryRequest.getLastName())
                 .customerID(beneficiaryRequest.getCustomerID())
+                .transferID(beneficiaryRequest.getTransferID())
                 .build();
         Beneficiary bn =beneficiaryRepository.save(beneficiary);
         return  AddBeneficiaryResponse.builder()
@@ -335,6 +340,10 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
     @Override
     public Optional<Beneficiary> getBeneficiaryById(Long beneficiaryId) {
         return beneficiaryRepository.findById(beneficiaryId);
+    }
+    @Override
+    public Optional<Beneficiary> getBeneficiaryByTransferId(Long beneficiaryId) {
+        return beneficiaryRepository.findByTransferID(beneficiaryId);
     }
     @Override
     public void updateTransferID(Long transferID, Long beneficiaryID) {
@@ -376,7 +385,7 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
                 // Customer is not in SIRONE blacklist
                 return FindCustomerByPhoneResponse.builder()
                         .customer(customerOptional.get())
-                        .message("Customer exists and is not in SIRONE blacklist.")
+                        .message("Customer exists and is not in blacklist.")
                         .isBlockedOrExist(true)
                         .build();
             }
@@ -390,7 +399,7 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
             } else {
                 // Customer is not in SIRONE blacklist
                 return FindCustomerByPhoneResponse.builder()
-                        .message("Customer does not exist and is not in SIRONE blacklist.")
+                        .message("Customer does not exist .")
                         .isBlockedOrExist(false)
                         .build();
             }
@@ -449,6 +458,60 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
   return externalNotificationService.verifyIdentity(phone,code).getBody();
 
 }
+    @Override
+    public FindKYCResponse findKYC(String identity) {
+        Optional<Customer> customer = customerRepository.findByCin(identity);
+        if (customer.isPresent()) {
+            Customer c = customer.get();
+            KYC kyc = c.getKyc();
+            // Assuming the date format is yyyy-MM-dd
+            LocalDate expirationDate = LocalDate.parse(kyc.getIdExpirationDate());
+            LocalDate currentDate = LocalDate.now();
+            // Check if the KYC is expired
+            if (currentDate.isAfter(expirationDate)) {
+                return FindKYCResponse.builder()
+                        .isFound(true)
+                        .message("La vérification KYC a expiré, veuillez la mettre à jour.")
+                        .kyc(kyc)
+                        .isExpired(true)
+                        .build();
+            } else {
+                return FindKYCResponse.builder()
+                        .isFound(true)
+                        .message("Voici le Kyc")
+                        .kyc(kyc)
+                        .isExpired(false)
+                        .build();
+            }
+        }
+   else {
+        return FindKYCResponse.builder()
+                .isFound(false)
+                .message("Le numéro d'identité n'est pas trouvé dans la liste KYC.")
+                .build();
+    }
 
+}
+@Override
+    public List<KYC> getAllKYC() {
+        return kycRepository.findAll();
+    }
+    // getting the KYC by ID
+    @Override
+    public Optional<KYC> getKYCById(Long id) {
+        return kycRepository.findById(id);
+    }
 
+  @Override
+    public Wallet getWalletByWalletID(Long id){
+
+        Optional<Wallet> wallet = walletRepository.findById(id);
+      return wallet.orElse(null);
+
+  }
+  @Override
+  public  Customer getCustomerByIdNumber(String cin){
+        Optional<Customer> customer =customerRepository.findByCin(cin);
+      return customer.orElse(null);
+  }
 }

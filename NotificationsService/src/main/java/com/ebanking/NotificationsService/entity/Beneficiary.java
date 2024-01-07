@@ -25,6 +25,7 @@ public class Beneficiary {
     private String phone;
     private String rib;
     private String cin;
+    private  Long customerID;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

@@ -1,5 +1,5 @@
 package com.ebanking.TransferService.entity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,6 +25,7 @@ public class Beneficiary {
     private String phone;
     private String rib;
     private String cin;
+    private  Long customerID;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -33,9 +34,7 @@ public class Beneficiary {
 
     @ManyToOne
     @JoinColumn(name = "transfer_entity_id")
-    @JsonIgnoreProperties("beneficiaries")
-    private TransferEntity transferEntity; // Add this field
-
+    private TransferEntity transferEntity;
 
     @OneToMany(mappedBy = "beneficiary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wallet> wallets;

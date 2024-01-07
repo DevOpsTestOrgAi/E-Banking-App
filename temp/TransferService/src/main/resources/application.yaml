@@ -33,5 +33,5 @@ spring:
   kafka:
     consumer:
       group-id: client_transfer
-topic:
-  name: t.client-transfer
+# topic:
+#   name: t.client-transfer

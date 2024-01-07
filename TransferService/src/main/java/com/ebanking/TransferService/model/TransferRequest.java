@@ -17,10 +17,9 @@ public class TransferRequest {
     private double maxBAmountPeriodC;
     private int maxTransfersPerCustomer;
     private String toBeServedFrom;
-    private String PINCode;
+    private String pin;
     private int validationDuration;
     private  BeneficiaryRequest beneficiaryRequest;
-
     private Long customerID;
 //    private List<Beneficiary> beneficiaries;
     private String motif;

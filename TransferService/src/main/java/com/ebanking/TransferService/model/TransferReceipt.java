@@ -95,7 +95,7 @@ public class TransferReceipt {
         addSubtitle(document, "Mode de transfert        :  ", transferType, normalFont);
         addSubtitle(document, "Référence                :  ", reference, normalFont);
         addEmptyLines(document, 4);
-        addSubtitle(document, "                                                                                " + "Montant total: ", String.valueOf(amount), subTitleFont);
+        addSubtitle(document, "                                                                           " + "Montant total: ", String.valueOf(amount)+"0 DH", subTitleFont);
     }
 
     private void addTitle(Document document, Font font) throws DocumentException {

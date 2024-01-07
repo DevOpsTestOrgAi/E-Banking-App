@@ -5,7 +5,7 @@ import com.ebanking.ClientService.entity.*;
 import com.ebanking.ClientService.model.*;
 import com.ebanking.ClientService.service.ClientManagementServiceImpl;
 import com.ebanking.ClientService.service.ClientTransferOperationServiceImpl;
-import com.ebanking.ClientService.service.Consumer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +23,15 @@ public class ClientManagementController {
     private ClientManagementServiceImpl clientManagementService;
     @Autowired
     ClientTransferOperationServiceImpl clientTransferOperationService;
-    @Autowired
-    private  Consumer consumer;
+//    @Autowired
+//    private  Consumer consumer;
 
 
-    @GetMapping("/getAllFromTopic")
-    public List<Object> consumeAndGetObjects() {
-
-        return consumer.getAllReceivedObjects();
-    }
+//    @GetMapping("/getAllFromTopic")
+//    public List<Object> consumeAndGetObjects() {
+//
+//        return consumer.getAllReceivedObjects();
+//    }
 
 
 
@@ -68,28 +68,25 @@ public class ClientManagementController {
     public ResponseEntity<List<TransferEntity>> getAllTransfers() {
         return new ResponseEntity<>(clientManagementService.getAllTransfers() ,HttpStatus.OK);
     }
-    @PostMapping("/serveViaGAB")
+    @PostMapping("/serverTransfer")
     public ResponseEntity<ServeTransferResponse> markTransferAsServedFromATM(@RequestBody TransferWithdrawRequest transferWithdrawRequest) {
         //consume transfer here
 
         return new ResponseEntity<>(clientTransferOperationService.markAsServed(transferWithdrawRequest) ,HttpStatus.OK);
     }
     @PutMapping("/updateKYC/{cin}")
-    public ResponseEntity<String> updateKYCInformation(
-            @PathVariable Long cin,
+    public ResponseEntity<UpdateKYCResponse> updateKYCInformation(
+            @PathVariable String cin,
             @RequestBody KYC updatedKYC) {
 
-        Optional<Customer> updatedCustomer = clientManagementService.updateKYCInformation(cin, updatedKYC);
+      return new ResponseEntity<>(clientManagementService.updateKYCInformation(cin, updatedKYC),HttpStatus.OK);
 
-        return updatedCustomer.map(customer -> ResponseEntity.ok("KYC information updated successfully"))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found or KYC cannot be updated."));
     }
-    @PostMapping("/addKYC/{cin}")
-    public ResponseEntity<String> addKYC(@PathVariable Long cin, @RequestBody KYCRequest kycRequest) {
-        Optional<Customer> updatedCustomer = clientManagementService.addKYC(cin, kycRequest);
+    @PostMapping("/addKYC")
+    public ResponseEntity<AddKYCResponse> addKYC( @RequestBody KYCRequest kycRequest) {
+        return new ResponseEntity<>(clientManagementService.addKYC( kycRequest) ,HttpStatus.OK);
 
-        return updatedCustomer.map(customer -> ResponseEntity.ok("KYC added successfully for Customer ID: " + cin))
-                .orElseGet(() -> ResponseEntity.badRequest().body("Customer not found with ID: " + cin));
+
     }
     @GetMapping("/check-KYC-expiration/{customerId}")
     public boolean checkKYCExpiration(@PathVariable Long customerId) {
@@ -157,7 +154,7 @@ public class ClientManagementController {
     }
     @GetMapping("/")
     public String test() {
-        return "fuck you";
+        return "hello it works ";
     }
 
 
@@ -173,5 +170,34 @@ public class ClientManagementController {
 
         return ResponseEntity.ok( clientManagementService.verifyIdentity(sendVerificationCodeRequest));
     }
+    @PostMapping("/find-kyc")
+    public FindKYCResponse findKYC(@RequestBody FindKYCRequest request) {
+        return clientManagementService.findKYC( request.getIdentity());
+    }
+    @GetMapping("/GetAllKyc")
+    public List<KYC> getAllKYC() {
+        return clientManagementService.getAllKYC();
+    }
+    @GetMapping("/getKycByID/{id}")
+    public KYC getKYCById(@PathVariable Long id) {
+        Optional<KYC> kyc = clientManagementService.getKYCById(id);
+        return kyc.orElse(null);
+    }
+    @GetMapping("/getWalletByWalletID/{id}")
+    public Wallet getWalletByWalletID(@PathVariable Long id) {
+   return  clientManagementService.getWalletByWalletID(id);
+
+    }
+    @GetMapping("findBeneficiaryByTransferID/{customerID}")
+    public Beneficiary getBeneficiaryByTransferId(@PathVariable Long customerID) {
+        return clientManagementService.getBeneficiaryByTransferId(customerID)
+                .orElseThrow(() -> new RuntimeException("Beneficiary not found with ID: " + customerID));
+    }
+    @GetMapping("findCustomerByIdNumber/{idNumber}")
+    public Customer getCustomerByIdNumber(@PathVariable String idNumber) {
+        return clientManagementService.getCustomerByIdNumber(idNumber)
+                ;
+    }
+
 
 }

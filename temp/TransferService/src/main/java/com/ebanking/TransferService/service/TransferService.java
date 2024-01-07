@@ -2,6 +2,8 @@ package com.ebanking.TransferService.service;
 
 import com.ebanking.TransferService.entity.Beneficiary;
 import com.ebanking.TransferService.entity.TransferEntity;
+import com.ebanking.TransferService.model.RestitutionTransferResponse;
+import com.ebanking.TransferService.model.TransferHistoriesResponse;
 import com.ebanking.TransferService.model.TransferRequest;
 import com.ebanking.TransferService.model.TransferResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -73,4 +75,131 @@ void blockTransfer(Long transferId);
 
 
     byte[] getTransferReceipt(Long transferId);
+
+    //TODO : Add batch   blocking transfers-->
+    //TODO : Handle logic to Block/unblock a transfer
+    //TODO : Add batch   Restitution transfers : Refund money to wallet
+    //TODO : Add batch   Cancel transfers   : refund money to wallet and make and change the status of  Transfer object stored in DB
+    void unblockTransfer(Long transferId);
+
+    // Restitution du transfer  national
+ //    @Override
+ //    public RestitutionTransferResponse restitutionTransfer(Long transferID  ){
+ //            //
+ //            Optional<TransferEntity> transfer =transferRepository.findById(transferID);
+ //            if(transfer.isPresent()){
+ //                List<Customer> customers=new ArrayList<>();
+ //                TransferEntity tr=transfer.get();
+ //                //should check if  the transfer is served
+ //                if(tr.getType()==TransferType.WALLET_TO_WALLET&&tr.getState()==TransferState.SERVED){
+ //                    List<Long> beneficiariesIds = tr.getIdsAsList();
+ //                    List<Long> beneficiaryWalletsIds=tr.getWalletIds();
+ //                    List<Double> amounts = tr.getAmounts();
+ //
+ //                 Wallet customerWallet=externalClientService.getWalletByWalletID(tr.getCustomerWalletId());
+ //                 // here  beneficiariesIds are like 1|2|
+ //                    // beneficiaryWalletsIds  are like 22|11|   means the beneficiary with id=1 has wallet with id 22 , the same about beneficiary with id=2 he has walletid =11
+ //                    /*
+ //                     each beneficiary has received an amount      like the beneficiary  with the id =1  has received the amount 100.00  the list  of amounts is looking like this :  100|
+ //                     so i want to check if each  one of beneficairy has Balance of wallet > amount
+ //                     */
+ //                    for (int i = 0; i < beneficiariesIds.size(); i++) {
+ //                        Long beneficiaryID  = beneficiariesIds.get(i);
+ //                        Long beneficiaryWalletID =beneficiaryWalletsIds.get(i);
+ //                        double amount =amounts.get(i);
+ //                        if(externalClientService.getWalletByWalletID(beneficiaryWalletID).getBalance()>amount){
+ //                            externalClientService.updateWalletBalance(tr.getCustomer().getId(),customerWallet.getBalance()+amount);
+ //                            externalClientService.updateWalletBalance(beneficiaryID,externalClientService.getWalletByWalletID(beneficiaryWalletID).getBalance()-amount);
+ //                           Optional<Customer>  c  = externalClientService.getCustomerById(beneficiaryID);
+ //                            c.ifPresent(customers::add);
+ //
+ //                        }
+ //
+ //
+ //                    } if(customers.isEmpty()){
+ //                        //return the  response
+ //                        return RestitutionTransferResponse.builder()
+ //                                .customerList(null)
+ //                                .isRestitutive(false)
+ //                                .message("Error while reinstituting transfers : Customers Balance is instantaneous")
+ //                                .build();
+ //
+ //                    }else {
+ //
+ //
+ //                        //return the  response
+ //                        return RestitutionTransferResponse.builder()
+ //                                .customerList(customers)
+ //                                .isRestitutive(true)
+ //                                .message("Restitutive Transfers ")
+ //
+ //                                .build();
+ //
+ //                    }
+ //
+ //
+ //                }if((tr.getType()==TransferType.WALLET_TO_BANK||
+ //                        tr.getType()==TransferType.WALLET_TO_GAB)&&
+ //                                        (tr.getState()==TransferState.TO_BE_SERVED||
+ //                                                tr.getState()==TransferState.BLOCKED)){
+ //                    Wallet customerWallet=externalClientService.getWalletByWalletID(tr.getCustomerWalletId());
+ //                    externalClientService.updateWalletBalance(tr.getCustomer().getId(),customerWallet.getBalance()+tr.getAmount());
+ //                     Optional<Customer> c =externalClientService.getCustomerById(tr.getWalletIds().get(0));
+ //                    Customer customer = null;
+ //
+ //                     if(c.isPresent()){
+ //                        customer =c.get();
+ //                         customers.add(customer);
+ //                     }
+ //                    return RestitutionTransferResponse.builder()
+ //                            .customerList(customers)
+ //                            .message("Restitutive Transfers succesffly")
+ //                            .build();
+ //
+ //
+ //                }
+ //                if((tr.getType()==TransferType.BANK_TO_BANK||
+ //                        tr.getType()==TransferType.BANK_TO_GAB)&&
+ //                        (tr.getState()==TransferState.TO_BE_SERVED||
+ //                                tr.getState()==TransferState.BLOCKED)){
+ //                    Wallet customerWallet=externalClientService.getWalletByWalletID(tr.getCustomerWalletId());
+ //                    externalClientService.updateWalletBalance(tr.getCustomer().getId(),customerWallet.getBalance()+tr.getAmount());
+ //                    Customer customer = null;
+ //                    Optional<Customer> c =externalClientService.getCustomerById(tr.getWalletIds().get(0));
+ //
+ //                    if(c.isPresent()){
+ //
+ //                        customer =c.get();
+ //                        customers.add(customer);
+ //                    }
+ //                    return RestitutionTransferResponse.builder()
+ //                            .customerList(customers)
+ //                            .message("Restitutive Transfers succesffly")
+ //                            .build();
+ //
+ //
+ //
+ //
+ //                }
+ //                if(tr.getState()==TransferState.RESET)
+ //                return RestitutionTransferResponse.builder()
+ //                        .customerList(null)
+ //                        .message("Transfer is already Restitued ")
+ //                        .build();
+ //
+ //                }
+ //
+ //
+ //
+ //            }else return  RestitutionTransferResponse.builder()
+ //                    .isRestitutive(false)
+ //                    .customerList(null)
+ //                    .message("transfer is not exist")
+ //                    .build();
+ //
+ //
+ //    }
+    RestitutionTransferResponse restitutionTransfer(Long transferID);
+
+    List<TransferHistoriesResponse> getTransferHistoriesByCustomerIdNumber(String idNumber);
 }

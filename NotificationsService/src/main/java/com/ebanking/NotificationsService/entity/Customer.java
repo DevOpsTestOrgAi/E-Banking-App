@@ -1,6 +1,5 @@
 package com.ebanking.NotificationsService.entity;
 
-
 import com.ebanking.NotificationsService.model.CustomerType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -41,6 +40,8 @@ public class Customer {
     private String  otp ;
     private Long ctc;
     private String rib ;
+
+
     public Customer(String firstName, String lastName, String gsm, String idNumber, CustomerType type) {
         this.firstName=firstName;
         this.lastName=lastName;

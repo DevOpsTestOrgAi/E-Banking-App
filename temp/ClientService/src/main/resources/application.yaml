@@ -39,10 +39,10 @@ spring:
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-size: 10
         sliding-window-type: COUNT_BASED
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: "default"
-topic:
-  name: t.client-transfer
+#   kafka:
+#     bootstrap-servers: localhost:9092
+#     consumer:
+#       group-id: "default"
+# topic:
+#   name: t.client-transfer
 

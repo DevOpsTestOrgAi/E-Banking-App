@@ -3,9 +3,10 @@ package com.ebanking.ClientService.service;
 import com.ebanking.ClientService.entity.TransferEntity;
 import com.ebanking.ClientService.model.TransferWithdrawRequest;
 import com.ebanking.ClientService.model.ServeTransferResponse;
-import com.ebanking.ClientService.model.TransferType;
 
 public interface ClientTransferOperationService {
+
+
     void sendOTP(Long customerID);
 
     // Mettre le transfert à l'état "A servir"

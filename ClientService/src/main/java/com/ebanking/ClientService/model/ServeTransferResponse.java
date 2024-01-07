@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class ServeTransferResponse {
     private String message ;
     private  Boolean isServed ;
+    private Long transferID;
 
 }

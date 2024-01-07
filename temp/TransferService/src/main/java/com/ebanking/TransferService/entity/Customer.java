@@ -1,7 +1,6 @@
 package com.ebanking.TransferService.entity;
+
 import com.ebanking.TransferService.model.CustomerType;
-import com.ebanking.TransferService.entity.TransferEntity;
-import com.ebanking.TransferService.entity.Wallet;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -41,6 +40,7 @@ public class Customer {
     private String  otp ;
     private Long ctc;
     private String rib ;
+
 
     public Customer(String firstName, String lastName, String gsm, String idNumber, CustomerType type) {
         this.firstName=firstName;

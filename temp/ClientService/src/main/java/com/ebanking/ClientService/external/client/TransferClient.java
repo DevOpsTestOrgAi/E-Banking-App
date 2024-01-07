@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "TRANSFER-SERVICE", url = "http://transfer-service-svc/api/transfers")
+@FeignClient(name = "TRANSFER-SERVICE", url = "http://localhost:8082/api/transfers")
 public interface TransferClient {
     @PostMapping("/serve/{transferID}")
      ResponseEntity<String> serveTransfer(@PathVariable Long transferID);

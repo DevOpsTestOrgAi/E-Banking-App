@@ -13,4 +13,10 @@ public interface BeneficiaryRepository extends JpaRepository<Beneficiary,Long> {
 
 
     List<Beneficiary> findByCustomerId(Long customerId);
+
+
+
+    Optional<Beneficiary> findByCinAndTransferID(String cin, Long transferID);
+
+    Optional<Beneficiary> findByTransferID(Long beneficiaryId);
 }
