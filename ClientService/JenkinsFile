@@ -40,7 +40,7 @@ pipeline {
             environment {
                 DOCKER_IMAGE = "algabrizaid/clientservice:${imageTag}"
                DOCKERFILE_LOCATION = "ClientService/Dockerfile"
-                
+                REGISTRY_CREDENTIALS = credentials('dockerhub')
             }
             steps {
                 script {
