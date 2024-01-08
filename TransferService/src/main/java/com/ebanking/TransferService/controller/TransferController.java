@@ -27,9 +27,15 @@ public class TransferController {
 
     private final TransferService transferService;
 
+
+
     @Autowired
     public TransferController(TransferService transferService) {
         this.transferService = transferService;
+    }
+        @GetMapping("/")
+    public String test() {
+        return "hello it works form transfer";
     }
 
     @PostMapping("/initiate")

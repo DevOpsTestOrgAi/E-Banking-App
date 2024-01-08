@@ -20,7 +20,7 @@ public class NotificationsController {
     public String sendSMS(@RequestBody SMS sms) {
         return notificationsServcie.sendSMS(sms);
     }
-
+    
     @PostMapping("/OTP")
     public ResponseEntity<SendVerificationCodeResponse> verifyIdentity(@RequestParam String phone, @RequestParam String code) {
         return new ResponseEntity<>(notificationsServcie.verifyIdentity(phone,code), HttpStatus.OK);
