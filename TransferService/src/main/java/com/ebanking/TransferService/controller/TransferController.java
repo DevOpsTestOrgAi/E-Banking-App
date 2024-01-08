@@ -33,12 +33,9 @@ public class TransferController {
     public TransferController(TransferService transferService) {
         this.transferService = transferService;
     }
-        @GetMapping("/")
-    public String test() {
-        return "hello it works form transfer";
-    }
+ 
 
-    @PostMapping("/initiate")
+    @PostMapping("/")
     public ResponseEntity<TransferResponse> initiateTransfer(@RequestBody TransferRequest transferRequest) throws IOException {
 
         return ResponseEntity.ok(transferService.initiateTransfer(transferRequest));
