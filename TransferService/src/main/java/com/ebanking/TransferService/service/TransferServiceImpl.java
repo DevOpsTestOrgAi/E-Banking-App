@@ -41,7 +41,7 @@ import java.util.Optional;
          private TransferReceiptWalletToBANK transferReceiptWalletToBANK;
          @Autowired
          private TransferReceiptBANKToBANK  transferReceiptBANKToBANK;
-         private static final String pdfPath="G:/Microservices-ebanking-app/TransferService/";
+         private static final String pdfPath="/var/lib/pdf";
 
 
 

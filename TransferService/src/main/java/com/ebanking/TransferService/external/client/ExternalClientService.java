@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
-@FeignClient(name = "CLIENT-SERVICE", url = "http://localhost:8087/api/client")
+@FeignClient(name = "CLIENT-SERVICE", url = "http://client-service-svc:8087/api/client")
 public interface ExternalClientService {
     @PostMapping("/addToBlackListByCin")
     public ResponseEntity<String> addToBlackListByCin(@RequestParam String cin, @RequestParam String reason);
