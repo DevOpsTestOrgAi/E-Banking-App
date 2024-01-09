@@ -36,16 +36,5 @@ public class CloudGatewayApplication {
 						).build()
 		);
 	}
-	 @Bean
-    public GlobalCorsProperties globalCorsProperties() {
-        GlobalCorsProperties corsProperties = new GlobalCorsProperties();
-        CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOriginPatterns(Collections.singletonList("*")); // Allow all origins
-        corsConfig.setAllowedMethods(Collections.singletonList("*")); // Allow all methods
-        corsConfig.setAllowedHeaders(Collections.singletonList("*")); // Allow all headers
-        corsConfig.setAllowCredentials(true);
 
-        corsProperties.setCorsConfigurations(Collections.singletonMap("/**", corsConfig));
-        return corsProperties;
-    }
 }

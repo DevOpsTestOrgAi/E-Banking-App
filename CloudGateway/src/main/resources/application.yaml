@@ -9,10 +9,14 @@ spring:
   cloud:
      gateway:
       globalcors:
-        corsConfigurations:
-          '[/**]': # This applies the CORS configuration to all routes
+        cors-configurations:
+          '[/**]':
             allowedOrigins: "*"
-            allowedMethods: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
       routes:
         - id : TRANSFER-SERVICE
           uri: lb://TRANSFER-SERVICE
