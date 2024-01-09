@@ -7,7 +7,14 @@ spring:
   config:
     import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
   cloud:
-    gateway:
+     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
       routes:
         - id : TRANSFER-SERVICE
           uri: lb://TRANSFER-SERVICE
