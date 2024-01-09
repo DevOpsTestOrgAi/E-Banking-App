@@ -10,11 +10,9 @@ spring:
      gateway:
       globalcors:
         corsConfigurations:
-          '[/**]':
+          '[/**]': # This applies the CORS configuration to all routes
             allowedOrigins: "*"
             allowedMethods: "*"
-            allowedHeaders: "*"
-            allowCredentials: true
       routes:
         - id : TRANSFER-SERVICE
           uri: lb://TRANSFER-SERVICE
