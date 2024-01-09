@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transfers")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class TransferController {
 
     private final TransferService transferService;
