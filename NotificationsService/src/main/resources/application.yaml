@@ -30,7 +30,7 @@ spring:
         sliding-window-size: 10
         sliding-window-type: COUNT_BASED
 vonage:
-  apiKey: 3073e7dc
-  apiSecret: ZCZVrdhhblXHWQq1
+  apiKey: e98b92a2
+  apiSecret: jC6EEd0hNv0j5vEB
 # topic:
 #   name: t.transfer-notifications-customer
