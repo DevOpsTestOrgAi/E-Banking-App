@@ -17,6 +17,8 @@ spring:
               - POST
               - PUT
               - DELETE
+            allowedHeaders:
+              - "*"
       routes:
         - id : TRANSFER-SERVICE
           uri: lb://TRANSFER-SERVICE
