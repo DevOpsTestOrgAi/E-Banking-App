@@ -3,10 +3,8 @@ package com.ebanking.ClientService.service;
 import com.ebanking.ClientService.entity.Beneficiary;
 import com.ebanking.ClientService.entity.Customer;
 import com.ebanking.ClientService.entity.TransferEntity;
-import com.ebanking.ClientService.entity.Wallet;
 import com.ebanking.ClientService.external.client.ExternalNotificationService;
 import com.ebanking.ClientService.external.client.TransferClient;
-import com.ebanking.ClientService.model.TransferState;
 import com.ebanking.ClientService.model.TransferWithdrawRequest;
 import com.ebanking.ClientService.model.ServeTransferResponse;
 import com.ebanking.ClientService.model.TransferType;
@@ -17,12 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-
 @Service
 public class ClientTransferOperationServiceImpl implements  ClientTransferOperationService{
 

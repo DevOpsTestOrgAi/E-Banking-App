@@ -2,10 +2,7 @@ package com.ebanking.TransferService.controller;
 
 import com.ebanking.TransferService.entity.Beneficiary;
 import com.ebanking.TransferService.entity.TransferEntity;
-import com.ebanking.TransferService.model.RestitutionTransferResponse;
-import com.ebanking.TransferService.model.TransferHistoriesResponse;
-import com.ebanking.TransferService.model.TransferRequest;
-import com.ebanking.TransferService.model.TransferResponse;
+import com.ebanking.TransferService.model.*;
 import com.ebanking.TransferService.service.TransferService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transfers")
-@CrossOrigin(origins = "*")
+// @CrossOrigin(origins = "*")
 public class TransferController {
 
     private final TransferService transferService;
@@ -115,6 +112,11 @@ public class TransferController {
             // Log the exception and return an appropriate error response
             return ResponseEntity.internalServerError().body(null); // Update as needed based on your error handling strategy
         }
+    }
+    @GetMapping("/statistics")
+    public ResponseEntity<GetAllTransfersStatistics> getAllTransfersStatistics() {
+        GetAllTransfersStatistics statistics = transferService.getAllTransfersStatistics();
+        return ResponseEntity.ok(statistics);
     }
 
 }

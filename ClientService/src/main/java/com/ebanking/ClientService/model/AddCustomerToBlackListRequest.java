@@ -5,14 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
-public class BlacklistRequest {
-    private String firstName  ;
-    private String lastName ;
-    private String cin;
+public class AddCustomerToBlackListRequest {
+    private String cin ;
     private String rib ;
-    private String reason;
+    private String reason  ;
+    private  String firstName ;
+    private String lastName ;
+
 }

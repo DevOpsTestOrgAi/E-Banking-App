@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -108,7 +109,7 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
         if (existingSirone.isPresent()) {
             // SIRONE entry already exists for the given cin, you may choose to update or throw an exception
             // Here, I'll throw an exception for demonstration purposes
-            throw new RuntimeException("Customer is already in the black list.");
+            throw new RuntimeException("Le client est déjà dans la liste noire.");
         }
 
         SIRONE sirone = SIRONE.builder().cin(cin).reason(reason).build();
@@ -121,17 +122,91 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
         if (existingSirone.isPresent()) {
             // SIRONE entry already exists for the given rib, you may choose to update or throw an exception
             // Here, I'll throw an exception for demonstration purposes
-            throw new RuntimeException("Customer is already in the black list.");
+            throw new RuntimeException("Le client est déjà dans la liste noire.");
         }
 
         SIRONE sirone = SIRONE.builder().rib(rib).reason(reason).build();
         sironRepository.save(sirone);
     }
+    @Override
+    public AddCustomerToBlackListResponse addCustomerToBlackList(AddCustomerToBlackListRequest addCustomerToBlackListRequest) {
+
+        if (addCustomerToBlackListRequest.getRib() == null) {
+            Optional<SIRONE> sirone = sironRepository.findByCin(addCustomerToBlackListRequest.getCin());
+            if (sirone.isPresent()) {
+                return AddCustomerToBlackListResponse.builder()
+                        .isAdded(false)
+                        .message("Ce client est déjà dans liste noire")
+                        .build();
+            } else {
+                SIRONE sirone1 = SIRONE.builder().cin(addCustomerToBlackListRequest.getCin()).reason(addCustomerToBlackListRequest.getReason()).build();
+                sironRepository.save(sirone1);
+                return AddCustomerToBlackListResponse.builder()
+                        .isAdded(true)
+                        .message("Le client est ajouté à la liste noire avec succès!")
+                        .build();
+
+            }
+        } else {
+            Optional<SIRONE> sirone = sironRepository.findByCin(addCustomerToBlackListRequest.getCin());
+            if (sirone.isPresent()) {
+                return AddCustomerToBlackListResponse.builder()
+                        .isAdded(false)
+                        .message("Ce client est déjà dans liste noire")
+                        .build();
+            } else {
+                SIRONE sirone1 = SIRONE.builder().cin(addCustomerToBlackListRequest.getCin()).reason(addCustomerToBlackListRequest.getReason()).rib(addCustomerToBlackListRequest.getRib()).build();
+                sironRepository.save(sirone1);
+                return AddCustomerToBlackListResponse.builder()
+                        .isAdded(true)
+                        .message("Le client est ajouté à la liste noire avec succès!")
+                        .build();
+
+            }
+
+        }
+    }
+    @Override
+    public ListBlackListedCustomersResponse getAllBlacklistedCustomers(){
+        List<SIRONE> sirones=sironRepository.findAll();
+        List<BlackListedCustomer> blackListedCustomerList=new ArrayList<>();
+
+        for(SIRONE sirone :sirones ){
+            if(sirone.getRib()==null){
+                Optional<Customer> customer=customerRepository.findByCin(sirone.getCin());
+                customer.ifPresent(value -> blackListedCustomerList.add(BlackListedCustomer.builder()
+                        .fullName(value.getFirstName() + " " + value.getLastName())
+                        .cin(sirone.getCin())
+                                .rib("Client prospect")
+                        .id(sirone.getId())
+                        .reasonToAddtoBlackList(sirone.getReason())
+                        .build()));
+
+
+            }else {
+                Optional<Customer> customer=customerRepository.findByRib(sirone.getRib());
+                customer.ifPresent(value -> blackListedCustomerList.add(BlackListedCustomer.builder()
+                        .fullName(value.getFirstName() + " " + value.getLastName())
+                        .cin(sirone.getCin())
+                        .id(sirone.getId())
+                        .rib(sirone.getRib())
+                        .reasonToAddtoBlackList(sirone.getReason())
+                        .build()));
+
+            }
+        }
+        return ListBlackListedCustomersResponse.builder()
+                .blackListedCustomerList(blackListedCustomerList)
+                .build();
+
+
+
+    }
     public void addProspectiveCustomer(KYCRequest kyc) {
         // Check if the customer already exists
 
         if (kycRepository.existsByIdNumber(kyc.getIdNumber()) ){
-            throw new RuntimeException("Customer with CIN " + kyc.getIdNumber() + " already exists.");
+            throw new RuntimeException("Client avec numéro d'identité " + kyc.getIdNumber() + "existe déjà.");
         }
 
         // Save the prospective customer
@@ -195,15 +270,19 @@ public Customer updateCustomer_toCustomer_ID(long customerID, long customerToCus
                     .customer(customer)
                     .build();
             customer.setKyc(newKyc);
+            customer.setLastName(newKyc.getLastName());
+            customer.setPhone(newKyc.getGsm());
+            customer.setCin(newKyc.getIdNumber());
+            customer.setFirstName(newKyc.getFirstName());
             customerRepository.save(customer);
             return UpdateKYCResponse.builder()
                     .isUpdated(true)
-                    .message("KYC is updated")
+                    .message("KYC est mis à jour avec succès")
                     .build();
 
         }else{
             return UpdateKYCResponse.builder()
-                    .isUpdated(true)
+                    .isUpdated(false)
                     .message("KYC Not found ")
                     .build();
         }
@@ -327,7 +406,7 @@ if(kyc.isEmpty()) {
         Beneficiary bn =beneficiaryRepository.save(beneficiary);
         return  AddBeneficiaryResponse.builder()
                 .id(bn.getId())
-                .message("beneficiary is added successfully")
+                .message("Le bénéficiaire a été ajouté avec succès!")
                 .build();
 
 
@@ -378,14 +457,14 @@ if(kyc.isEmpty()) {
             if (sironeOptional.isPresent()) {
                 // Customer is in SIRONE blacklist
                 return FindCustomerByPhoneResponse.builder()
-                        .message("Customer is in SIRONE blacklist.")
+                        .message("Le client est sur liste noire.")
                         .isBlockedOrExist(false)
                         .build();
             } else {
                 // Customer is not in SIRONE blacklist
                 return FindCustomerByPhoneResponse.builder()
                         .customer(customerOptional.get())
-                        .message("Customer exists and is not in blacklist.")
+                        .message("Le client existe et n'est pas sur la liste noire.")
                         .isBlockedOrExist(true)
                         .build();
             }
@@ -417,14 +496,14 @@ if(kyc.isEmpty()) {
             if (sironeOptional.isPresent()) {
                 // Customer is in SIRONE blacklist
                 return FindCustomerByPhoneResponse.builder()
-                        .message("Customer is in SIRONE blacklist.")
+                        .message("Customer is  blacklisted.")
                         .isBlockedOrExist(false)
                         .build();
             } else {
                 // Customer is not in SIRONE blacklist
                 return FindCustomerByPhoneResponse.builder()
                         .customer(customerOptional.get())
-                        .message("Customer exists and is not in SIRONE blacklist.")
+                        .message("Customer exists.")
                         .isBlockedOrExist(true)
                         .id(c.getId())
                         .build();
@@ -514,4 +593,8 @@ if(kyc.isEmpty()) {
         Optional<Customer> customer =customerRepository.findByCin(cin);
       return customer.orElse(null);
   }
+  @Override
+    public void deleteById(Long id) {
+        sironRepository.deleteById(id);
+    }
 }

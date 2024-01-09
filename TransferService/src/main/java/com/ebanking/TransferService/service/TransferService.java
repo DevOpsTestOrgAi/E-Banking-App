@@ -2,10 +2,7 @@ package com.ebanking.TransferService.service;
 
 import com.ebanking.TransferService.entity.Beneficiary;
 import com.ebanking.TransferService.entity.TransferEntity;
-import com.ebanking.TransferService.model.RestitutionTransferResponse;
-import com.ebanking.TransferService.model.TransferHistoriesResponse;
-import com.ebanking.TransferService.model.TransferRequest;
-import com.ebanking.TransferService.model.TransferResponse;
+import com.ebanking.TransferService.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
@@ -202,4 +199,6 @@ void blockTransfer(Long transferId);
     RestitutionTransferResponse restitutionTransfer(Long transferID);
 
     List<TransferHistoriesResponse> getTransferHistoriesByCustomerIdNumber(String idNumber);
+
+    GetAllTransfersStatistics getAllTransfersStatistics();
 }

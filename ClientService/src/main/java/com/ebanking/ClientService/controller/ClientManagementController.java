@@ -198,6 +198,20 @@ public class ClientManagementController {
         return clientManagementService.getCustomerByIdNumber(idNumber)
                 ;
     }
+    @GetMapping("/getAllBlackListedCustomers")
+    public ListBlackListedCustomersResponse getAllBlacklistedCustomers() {
+        return clientManagementService.getAllBlacklistedCustomers();
+    }
+    @DeleteMapping("/RemoveCustomerFromBlackListById/{id}")
+    public ResponseEntity<DeleteCustomerFromBlackListResponse> deleteSIRONEById(@PathVariable Long id) {
+
+        clientManagementService.deleteById(id);
+        return new ResponseEntity<>(DeleteCustomerFromBlackListResponse.builder().message("Le client a été retiré de la liste noire avec succès!").build(),HttpStatus.OK );
+    }
+    @PostMapping("/addCustomerToBlackList")
+    public AddCustomerToBlackListResponse addCustomerToBlackList(@RequestBody AddCustomerToBlackListRequest request) {
+        return clientManagementService.addCustomerToBlackList(request);
+    }
 
 
 }
