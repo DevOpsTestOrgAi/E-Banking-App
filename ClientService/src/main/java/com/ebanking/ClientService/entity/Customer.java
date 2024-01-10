@@ -17,7 +17,6 @@ import java.util.List;
 @Builder
 @JsonIgnoreProperties({"transactions", "wallets"})
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
