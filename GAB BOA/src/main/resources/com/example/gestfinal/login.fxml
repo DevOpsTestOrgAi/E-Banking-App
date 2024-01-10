@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.gestfinal.LoginController">
+   <left>
+      <AnchorPane prefHeight="200.0" prefWidth="228.0" style="-fx-background-color: #1369b4;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="214.0" fitWidth="200.0" layoutX="51.0" layoutY="75.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Capture.PNG" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="214.0" fitWidth="200.0" layoutX="14.0" layoutY="348.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Bank_of_africa-logo.png" />
+               </image>
+            </ImageView>
+         </children></AnchorPane>
+   </left>
+   <right>
+      <AnchorPane prefHeight="400.0" prefWidth="332.0" style="-fx-background-color: #ffffff;" BorderPane.alignment="CENTER">
+         <children>
+            <Label layoutX="14.0" layoutY="133.0" prefHeight="18.0" prefWidth="111.0" text="Numero de carte" />
+            <Label layoutX="16.0" layoutY="200.0" text="Code de securité" />
+            <PasswordField fx:id="passwordtextfield" layoutX="115.0" layoutY="196.0" />
+            <Button fx:id="loginbutton" layoutX="53.0" layoutY="280.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="170.0" style="-fx-background-color: #1369b4;" text="valider" textFill="#5bb4ba">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Button>
+            <TextField fx:id="usernametextfield" layoutX="115.0" layoutY="129.0" />
+            <Button fx:id="cancelbutton" layoutX="53.0" layoutY="329.0" mnemonicParsing="false" onAction="#cancelbuttonaction" prefHeight="26.0" prefWidth="170.0" style="-fx-background-color: #1369b4;" text="services sans carte" textFill="#5bb4ba">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Button>
+            <Label fx:id="loginmessagelabel" layoutX="27.0" layoutY="33.0" prefHeight="30.0" prefWidth="238.0" text="Bienvenu à votre GAB" textFill="#5bb4ba">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font></Label>
+         </children>
+      </AnchorPane>
+   </right>
+</BorderPane>

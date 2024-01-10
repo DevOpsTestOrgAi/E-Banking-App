@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="546.0" prefWidth="785.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.gestfinal.Controllers.StockController">
+
+         <children>
+      <TableView fx:id="tableStock" layoutX="111.0" layoutY="273.0" prefHeight="200.0" prefWidth="562.0">
+        <columns>
+          <TableColumn fx:id="colNom" prefWidth="88.0" text="Nom" />
+          <TableColumn fx:id="colQte" prefWidth="109.59996032714844" text="Date" />
+            <TableColumn fx:id="colPrix" prefWidth="121.5999755859375" text="Montant" />
+            <TableColumn fx:id="colDescription" prefWidth="243.20001220703125" text="Description" />
+        </columns>
+      </TableView>
+      <VBox layoutX="35.0" layoutY="55.0" prefHeight="231.0" prefWidth="317.0">
+         <children>
+            <Label text="Nom Facture" />
+            <TextField fx:id="Nom" promptText="Nom Medicament" />
+            <Label layoutX="10.0" layoutY="53.0" text="Montant" />
+            <TextField fx:id="Prix" layoutX="10.0" layoutY="70.0" promptText="Prix Unitaire" />
+            <Label text="Description" />
+            <TextField fx:id="Description" promptText="Description" />
+         </children>
+      </VBox>
+      <Button fx:id="btnSave" layoutX="429.0" layoutY="71.0" mnemonicParsing="false" onAction="#sendProduct" prefHeight="25.0" prefWidth="111.0" style="-fx-background-color: #1369b4;" text="Valider" textFill="#5bb4ba">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Label fx:id="message" alignment="CENTER" layoutX="423.0" layoutY="120.0" prefHeight="101.0" prefWidth="124.0" />
+      <Pane prefHeight="53.0" prefWidth="785.0" style="-fx-background-color: #5bb4ba;">
+         <children>
+            <Label layoutX="23.0" layoutY="18.0" prefHeight="20.0" prefWidth="199.0" text="GAB paiment factures" textFill="#1369b4">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Button fx:id="btnSave1" layoutX="429.0" layoutY="120.0" mnemonicParsing="false" onAction="#switchScene" prefHeight="25.0" prefWidth="111.0" style="-fx-background-color: #1369b4;" text="Transfert" textFill="#5bb4ba">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
