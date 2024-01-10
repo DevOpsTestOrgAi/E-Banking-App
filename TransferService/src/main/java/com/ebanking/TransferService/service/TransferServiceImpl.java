@@ -41,7 +41,6 @@ import java.util.Optional;
          private TransferReceiptWalletToBANK transferReceiptWalletToBANK;
          @Autowired
          private TransferReceiptBANKToBANK  transferReceiptBANKToBANK;
-        private static final String pdfPath="/var/lib/pdf";
 
 
 
@@ -129,7 +128,7 @@ import java.util.Optional;
                             Wallet beneficiaryWallet = externalClientService.getWalletById(beneficiaryId);
                             walletIds.add(beneficiaryWallet.getId());
                             externalClientService.updateWalletBalance(beneficiaryId,
-                                    beneficiaryWallet.getBalance() + calculateAmountWithFee(amount, transferRequest.getFeeType())-getFeeAmount(amount, transferRequest.getFeeType()));
+                                    beneficiaryWallet.getBalance() + calculateAmountWithFee(amount, transferRequest.getFeeType()));
 
                             transferEntity.setCustomerWalletId(wallet.getId());
 
@@ -156,7 +155,7 @@ import java.util.Optional;
 
                         // Generate the PDF content
                         String newPdfFileName = transferEntity.getReference() + "-recipient.pdf";
-                        String newPdfPath = pdfPath + newPdfFileName;
+                        String newPdfPath = "G:/Microservices-ebanking-app/TransferService/" + newPdfFileName;
                         transferReceipt.generateTransferReceipt(newPdfPath);
 
                         // Read the content of the new PDF into a byte array
@@ -241,7 +240,7 @@ import java.util.Optional;
 
                         // Génération du contenu PDF du reçu
                         String newPdfFileName = transferEntity.getReference() + "-recipient.pdf";
-                        String newPdfPath = pdfPath + newPdfFileName;
+                        String newPdfPath = "G:/Microservices-ebanking-app/TransferService/" + newPdfFileName;
                         transferReceiptWalletToGAB.generateTransferReceipt(newPdfPath);
 
                         // Lecture du contenu du nouveau PDF dans un tableau de bytes
@@ -335,7 +334,7 @@ import java.util.Optional;
 
                         // Génération du contenu PDF du reçu
                         String newPdfFileName = transferEntity.getReference() + "-recipient.pdf";
-                        String newPdfPath = pdfPath + newPdfFileName;
+                        String newPdfPath = "G:/Microservices-ebanking-app/TransferService/" + newPdfFileName;
                         transferReceiptWalletToBANK.generateTransferReceipt(newPdfPath);
 
                         // Lecture du contenu du PDF dans un tableau de bytes
@@ -407,7 +406,7 @@ import java.util.Optional;
                         transferReceiptBankToGAB.setReference(transferEntity.getReference());
                         // Generate the PDF content
                         String newPdfFileName = transferEntity.getReference()+"-recipient.pdf";
-                        String newPdfPath = pdfPath + newPdfFileName;
+                        String newPdfPath = "./TransferService/" + newPdfFileName;
                         transferReceiptBankToGAB.generateTransferReceipt(newPdfPath);
                         // Read the content of the new PDF into a byte array
                         byte[] pdfContent = Files.readAllBytes(Paths.get(newPdfPath));
@@ -476,7 +475,7 @@ import java.util.Optional;
 
                     // Génération du contenu PDF pour le reçu
                     String newPdfFileName = transferEntity.getReference() + "-recipient.pdf";
-                    String newPdfPath = pdfPath + newPdfFileName;
+                    String newPdfPath = "./TransferService/" + newPdfFileName;
                     transferReceiptBANKToBANK.generateTransferReceipt(newPdfPath);
 
                     // Lecture du contenu du PDF et stockage dans un tableau de bytes
@@ -522,36 +521,6 @@ import java.util.Optional;
                 .mapToDouble(amount -> calculateAmountWithFee(amount, feeType))
                 .sum();
     }
-    private double getFeeAmount(double transactionAmount, FeeType feeType){
-        double fixedFee;
-        if (transactionAmount < 1000.00) {
-            fixedFee = 9.00;
-        } else if (transactionAmount < 10000.00) {
-            fixedFee = 49.00;
-        } else if (transactionAmount < 20000.00) {
-            fixedFee = 199.00;
-        } else {
-            // Default case
-            fixedFee = 399.00;
-        }
-
-        return switch (feeType) {
-            case FEE_CLIENT_ORDERING ->
-                // Fee charged to the ordering client
-                    fixedFee;
-            case FEE_BENEFICIARY ->
-                // Fee charged to the beneficiary client
-                // No fee for the beneficiary
-                    0;
-            case FEE_SHARED ->
-                // Fees shared between clients (Ordering and Beneficiary)
-                    0.5 * fixedFee;
-            default ->
-                // Handle unsupported fee type or set default values
-                    0;
-        };
-    }
-
     private double calculateAmountWithFee(double transactionAmount, FeeType feeType) {
         // Assuming a fixed fee for illustration purposes
         double fixedFee;
@@ -798,7 +767,7 @@ import java.util.Optional;
            return RestitutionTransferResponse.builder()
                    .customerList(null)
                    .isRestitutive(false)
-                   .message("Le transfert a déjà été restitué.")
+                   .message("Transfer is already Restituted")
                    .build();
        }
 
@@ -816,17 +785,13 @@ import java.util.Optional;
                        double amount = amounts.get(i);
 
                        if (externalClientService.getWalletByWalletID(beneficiaryWalletID).getBalance() > amount) {
-                           externalClientService.updateWalletBalance(tr.getCustomer().getId(),
-                                                  customerWallet.getBalance() + amount);
-                           externalClientService.updateWalletBalance(beneficiaryID,
-                                                  externalClientService.getWalletByWalletID(beneficiaryWalletID).getBalance() - amount);
+                           externalClientService.updateWalletBalance(tr.getCustomer().getId(), customerWallet.getBalance() + amount);
+                           externalClientService.updateWalletBalance(beneficiaryID, externalClientService.getWalletByWalletID(beneficiaryWalletID).getBalance() - amount);
                            Optional<Customer> c = externalClientService.getCustomerById(beneficiaryID);
                            c.ifPresent(customers::add);
                            tr.setState(TransferState.RESET);
                            transferRepository.save(tr);
                        }
-
-
                    }
                }
            }
@@ -834,8 +799,8 @@ import java.util.Optional;
                Wallet customerWallet = externalClientService.getWalletByWalletID(tr.getCustomerWalletId());
                if (tr.getState() == TransferState.TO_BE_SERVED || tr.getState() == TransferState.BLOCKED) {
                    externalClientService.updateWalletBalance(tr.getCustomer().getId(), customerWallet.getBalance() + tr.getAmount());
-//                   Optional<Customer> c = externalClientService.getCustomerById(tr.getWalletIds().get(0));
-//                   c.ifPresent(customers::add);
+                   Optional<Customer> c = externalClientService.getCustomerById(tr.getWalletIds().get(0));
+                   c.ifPresent(customers::add);
                    tr.setState(TransferState.RESET);
                    transferRepository.save(tr);
                }
@@ -857,18 +822,18 @@ import java.util.Optional;
            }
        }
 
-       if (customers.isEmpty()&&tr.getType()==TransferType.WALLET_TO_WALLET) {
+       if (customers.isEmpty()) {
            return RestitutionTransferResponse.builder()
                    .customerList(null)
                    .isRestitutive(false)
-                   .message("Erreur lors du rétablissement des transferts : le solde du client est insuffisant")
+                   .message("Error while reinstituting transfers: Customers Balance is insufficient")
                    .build();
        }
 
        return RestitutionTransferResponse.builder()
                .customerList(customers)
                .isRestitutive(true)
-               .message("Le transfert a été restitué avec succès.")
+               .message("Restitutive Transfers Successful")
                .build();
    }
    @Override
@@ -939,7 +904,7 @@ import java.util.Optional;
     public static String writeTransferState(TransferState transferState) {
         return switch (transferState) {
             case TO_BE_SERVED -> "A servir";
-            case SERVED -> "Servie";
+            case SERVED -> "Servi";
             case EXTOURNED -> "Extourné";
             case RESET -> "Restitué";
             case BLOCKED -> "Bloqué";
@@ -947,16 +912,6 @@ import java.util.Optional;
             case ESCHEAT -> "Déshérence";
             default -> "État Inconnu";
         };
-    }
-    @Override
-    public GetAllTransfersStatistics getAllTransfersStatistics() {
-        return GetAllTransfersStatistics.builder()
-                .total(transferRepository.count())
-                .servedNumber(transferRepository.countByState(TransferState.SERVED))
-                .restituedNumber(transferRepository.countByState(TransferState.RESET))
-                .blockedNumber(transferRepository.countByState(TransferState.BLOCKED))
-                .initiatedNumber(transferRepository.countByState(TransferState.TO_BE_SERVED))
-                .build();
     }
 }
 

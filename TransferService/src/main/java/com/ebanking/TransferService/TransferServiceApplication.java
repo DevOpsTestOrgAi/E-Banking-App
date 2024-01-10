@@ -11,7 +11,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class TransferServiceApplication {
 
 	public static void main(String[] args) {
-
 		SpringApplication.run(TransferServiceApplication.class, args);
 	}
 

@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -91,7 +92,6 @@ public class TransferReceiptWalletToGAB {
         addSubtitle(document, "Mode de transfert        :  ", transferType, normalFont);
         addSubtitle(document, "Référence                :  ", reference, normalFont);
         addEmptyLines(document, 4);
-        addSubtitle(document, "                                                                           " + "Montant total: ", String.valueOf(amount)+"0 DH", subTitleFont);
     }
 
     private void addTitle(Document document, Font font) throws DocumentException {
@@ -120,11 +120,12 @@ public class TransferReceiptWalletToGAB {
 
     private void addImages(Document document, PdfWriter writer, Boolean isMobile) {
         try {
-            // Add banqueName image to the top
+            // Add banqueName image to the top left
             InputStream banqueNameImageStream = getClass().getClassLoader().getResourceAsStream("img/banqueName.png");
             assert banqueNameImageStream != null;
             Image banqueNameImage = Image.getInstance(IOUtils.toByteArray(banqueNameImageStream));
             banqueNameImageStream.close();
+            banqueNameImage.scaleToFit(40, 40);
 
             // Add footer image to the bottom
             InputStream footerImageStream = getClass().getClassLoader().getResourceAsStream("img/footer.png");
@@ -132,35 +133,29 @@ public class TransferReceiptWalletToGAB {
             Image footerImage = Image.getInstance(IOUtils.toByteArray(footerImageStream));
             footerImageStream.close();
 
-            // Adjust the scaling and position of the banqueName image
-            float banqueNameScaleWidth = PageSize.A4.getWidth();
-            float banqueNameScaleHeight = banqueNameImage.getScaledHeight() * (banqueNameScaleWidth / banqueNameImage.getScaledWidth());
-            banqueNameImage.scaleToFit(banqueNameScaleWidth, banqueNameScaleHeight);
-            banqueNameImage.setAbsolutePosition(0, PageSize.A4.getHeight() - banqueNameScaleHeight ); // Adjust position as needed
+            // Set the scaling to fit the full width of the page and maintain the aspect ratio
+            footerImage.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
 
-            // Adjust the scaling and position of the footer image
-            footerImage.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight()); // Adjust height as needed
+            // Set the absolute position at the bottom-left corner
             footerImage.setAbsolutePosition(0, 0);
 
-            // Add images to the document
+            // Set the images as watermark
             PdfContentByte canvas = writer.getDirectContentUnder();
             PdfGState gState = new PdfGState();
-            gState.setFillOpacity(1f); // Adjust opacity as needed
+            gState.setFillOpacity(0.5f); // Adjust opacity as needed
 
-            // Add banqueName image
+            // Add banqueName image as watermark
             canvas.saveState();
             canvas.setGState(gState);
-            canvas.addImage(banqueNameImage);
+            canvas.addImage(banqueNameImage, banqueNameImage.getWidth()-100, 0, 0, banqueNameImage.getHeight(), 0, PageSize.A4.getHeight() - 100);
             canvas.restoreState();
-
-            // Add footer image, if not on mobile
-            if (!isMobile) {
-                canvas.saveState();
-                canvas.setGState(gState);
-                canvas.addImage(footerImage);
-                canvas.restoreState();
-            }
-
+        if(!isMobile){
+            // Add footer image as watermark
+            canvas.saveState();
+            canvas.setGState(gState);
+            canvas.addImage(footerImage, PageSize.A4.getWidth(), 0, 0, 150, 0, 0);
+            canvas.restoreState();
+        }
         } catch (Exception e) {
             e.printStackTrace();
         }

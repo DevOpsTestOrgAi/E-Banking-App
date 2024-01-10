@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "NOTIFICATIONS-SERVICE", url = "http://notifications-service-svc/notifications")
+@FeignClient(name = "NOTIFICATIONS-SERVICE", url = "http://192.168.0.52:8088/notifications")
 public interface ExternalNotificationService {
     @PostMapping("/send-sms")
      String sendSMS(@RequestBody SMS sms);

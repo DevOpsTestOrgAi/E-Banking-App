@@ -3,8 +3,10 @@ package com.ebanking.ClientService.service;
 import com.ebanking.ClientService.entity.Beneficiary;
 import com.ebanking.ClientService.entity.Customer;
 import com.ebanking.ClientService.entity.TransferEntity;
+import com.ebanking.ClientService.entity.Wallet;
 import com.ebanking.ClientService.external.client.ExternalNotificationService;
 import com.ebanking.ClientService.external.client.TransferClient;
+import com.ebanking.ClientService.model.TransferState;
 import com.ebanking.ClientService.model.TransferWithdrawRequest;
 import com.ebanking.ClientService.model.ServeTransferResponse;
 import com.ebanking.ClientService.model.TransferType;
@@ -15,9 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+
 @Service
 public class ClientTransferOperationServiceImpl implements  ClientTransferOperationService{
 
@@ -64,133 +69,82 @@ public class ClientTransferOperationServiceImpl implements  ClientTransferOperat
     public void markAsToServe(TransferEntity transfer) {
 
     }
-
     @Override
     public ServeTransferResponse markAsServed(TransferWithdrawRequest transferWithdrawRequest) {
-        try {
-            // Get the transfer by reference
-            ResponseEntity<TransferEntity> transferResponse = transferClient.getTransferByReference(transferWithdrawRequest.getRef());
-
-            // Check if the transfer response is not OK or the body is null, return a response with status 500
-            if (transferResponse.getStatusCode() != HttpStatus.OK || transferResponse.getBody() == null) {
-                return ServeTransferResponse.builder()
-                        .message(" Référence de transfert invalide")
-                        .isServed(false)
-                        .build();
-            }
-
-            TransferEntity transfer = transferResponse.getBody();
-
-            // Check if the transfer entity is null
-            if (transfer == null) {
-                return ServeTransferResponse.builder().message("Référence de transfert invalide").isServed(false).build();
-            }
-
-            // Check transfer state
-            switch (transfer.getState()) {
-                case SERVED -> {
-                    return ServeTransferResponse.builder().message("Le retrait a déjà été effectué.").isServed(false).build();
-                }
-                case EXTOURNED -> {
-                    return ServeTransferResponse.builder().message("Le transfert est extourné.").isServed(false).build();
-                }
-                case BLOCKED -> {
-                    return ServeTransferResponse.builder().message("Le transfert est bloqué.").isServed(false).build();
-                }
-                default -> {
-                    // Proceed with further processing if none of the above states
-                }
-            }
-
-            // Process based on transfer type
-            return processTransferType(transfer, transferWithdrawRequest);
-        } catch (Exception e) {
-            // Handle any exceptions that may occur
-            return ServeTransferResponse.builder()
-                    .message("Reference fourni est incorrect! ")
-                    .isServed(false)
-                    .build();
+        // Get the transfer by reference
+        ResponseEntity<TransferEntity> transferResponse = transferClient.getTransferByReference(transferWithdrawRequest.getRef());
+        if (transferResponse.getStatusCode() != HttpStatus.OK) {
+            return ServeTransferResponse.builder().message("Reference is incorrect, try another").isServed(false).build();
         }
-    }
 
-    private ServeTransferResponse processTransferType(TransferEntity transfer, TransferWithdrawRequest transferWithdrawRequest) {
-        try {
-            // Process based on transfer type
-            if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_GAB ||
-                    transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
-
-                // GAB Transfer logic
-                return processGABTransfer(transfer, transferWithdrawRequest);
-            } else if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_BANK ||
-                    transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_BANK) {
-
-                // Bank Transfer logic
-                return processBankTransfer(transfer, transferWithdrawRequest);
-            } else {
-                return ServeTransferResponse.builder().message("Type de transfert inconnu").isServed(false).build();
-            }
-        } catch (Exception e) {
-            // Handle any exceptions that may occur during type-specific processing
-            return ServeTransferResponse.builder()
-                    .message("Reference fourni est incorrect! ")
-                    .isServed(false)
-                    .build();
+        TransferEntity transfer = transferResponse.getBody();
+        if (transfer == null) {
+            return ServeTransferResponse.builder().message("Invalid Transfer reference").isServed(false).build();
         }
-    }
 
-    private ServeTransferResponse processGABTransfer(TransferEntity transfer, TransferWithdrawRequest transferWithdrawRequest) {
-        try {
+
+        // Check transfer state
+        switch (transfer.getState()) {
+            case SERVED -> {
+                return ServeTransferResponse.builder().message("Transfer is already served.").isServed(false).build();
+            }
+            case EXTOURNED -> {
+                return ServeTransferResponse.builder().message("Transfer is extourned.").isServed(false).build();
+            }
+            case BLOCKED -> {
+                return ServeTransferResponse.builder().message("Transfer is blocked.").isServed(false).build();
+            }
+            default -> {
+            }
+            // Proceed with further processing if none of the above states
+        }
+
+        // Process based on transfer type
+        if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_GAB ||
+                transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_GAB) {
+
             // GAB Transfer logic
             if (transfer.getMaxPIN_Attempts() >= 7) {
                 transferClient.blockTransfer(transfer.getId());
-                return ServeTransferResponse.builder().message("Le transfert est bloqué en raison du dépassement du nombre maximum de tentatives de PIN").isServed(false).build();
+                return ServeTransferResponse.builder().message("Transfer is blocked due to exceeding maximum PIN attempts").isServed(false).build();
             }
 
-            if (Objects.equals(transferWithdrawRequest.getPin(), transfer.getPINCode()) && !transferWithdrawRequest.getPin().isEmpty()) {
+            if (Objects.equals(transferWithdrawRequest.getPin(), transfer.getPINCode())&&!transferWithdrawRequest.getPin().isEmpty()) {
                 transferClient.serveTransfer(transfer.getId());
-                return ServeTransferResponse.builder().transferID(transfer.getId()).message("Le retrait a été effectué avec succès").isServed(true).build();
+                return ServeTransferResponse.builder().transferID(transfer.getId()).message("Transfer is served successfully").isServed(true).build();
             } else {
                 int counter = transfer.getMaxPIN_Attempts() + 1;
                 transfer.setMaxPIN_Attempts(counter);
                 transferClient.updateMaxPINAttempts(transfer.getId(), counter);
-                return ServeTransferResponse.builder().message("PIN incorrect !").isServed(false).build();
+                return ServeTransferResponse.builder().message("Incorrect PIN!").isServed(false).build();
             }
-        } catch (Exception e) {
-            // Handle any exceptions that may occur during GAB transfer processing
-            return ServeTransferResponse.builder()
-                    .message("Reference fourni est incorrect! ")
-                    .isServed(false)
-                    .build();
-        }
-    }
 
-    private ServeTransferResponse processBankTransfer(TransferEntity transfer, TransferWithdrawRequest transferWithdrawRequest) {
-        try {
+        }
+        else if (transferWithdrawRequest.getTransferType() == TransferType.BANK_TO_BANK ||
+                transferWithdrawRequest.getTransferType() == TransferType.WALLET_TO_BANK) {
+
             // Bank Transfer logic
             Optional<Beneficiary> beneficiary = beneficiaryRepository.findByCinAndTransferID(
                     transferWithdrawRequest.getCin(),
                     transfer.getId()
             );
-
             if (beneficiary.isEmpty()) {
-                return ServeTransferResponse.builder().message("Le numéro d'identification est incorrect !").isServed(false).build();
+                return ServeTransferResponse.builder().message("ID number is incorrect!").isServed(false).build();
             }
 
             Beneficiary b = beneficiary.get();
             if (Objects.equals(transferWithdrawRequest.getCin(), b.getCin()) && transfer.getId() == b.getTransferID()) {
                 transferClient.serveTransfer(transfer.getId());
-                return ServeTransferResponse.builder().transferID(transfer.getId()).message("Le retrait a été effectué avec succès").isServed(true).build();
+                return ServeTransferResponse.builder().transferID(transfer.getId()).message("Transfer is served successfully").isServed(true).build();
             }
 
-            return ServeTransferResponse.builder().message("Les données fournies sont incorrectes").isServed(false).build();
-        } catch (Exception e) {
-            // Handle any exceptions that may occur during bank transfer processing
-            return ServeTransferResponse.builder()
-                    .message("La référence fournie est incorrecte !")
-                    .isServed(false)
-                    .build();
+            return ServeTransferResponse.builder().message("Provided data is incorrect").isServed(false).build();
+
+        } else {
+            return ServeTransferResponse.builder().message("Unknown transfer type").isServed(false).build();
         }
     }
+
 
 
 

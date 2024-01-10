@@ -7,7 +7,7 @@ spring:
   config:
     import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
   cloud:
-     gateway:
+    gateway:
       globalcors:
         cors-configurations:
           '[/**]':
@@ -23,18 +23,30 @@ spring:
         - id : TRANSFER-SERVICE
           uri: lb://TRANSFER-SERVICE
           predicates:
-            - Path=/api/transfers/**
+            - Path=/api/v1/order/**
           filters:
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: TRANSFER-SERVICE
                 fallbackuri: forward:/transferServiceFallBack
 
+        - id: IDENTITY-PROVIDER
+          uri: lb://IDENTITY-PROVIDER
+          predicates:
+            - Path=/api/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: IDENTITY-PROVIDER
+                fallbackuri: forward:/transferServiceFallBack
+
         - id: CLIENT-SERVICE
           uri: lb://CLIENT-SERVICE
           predicates:
-            - Path=/api/client/**
+            - Path=/api/v1/client/**
           filters:
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: CLIENT-SERVICE
@@ -43,10 +55,20 @@ spring:
         - id: NOTIFICATION-SERVICE
           uri: lb://NOTIFICATION-SERVICE
           predicates:
-            - Path=/notifications/**
+            - Path=/api/v1/notifications/**
           filters:
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: NOTIFICATION-SERVICE
                 fallbackuri: forward:/notificationServiceFallBack
 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_SERVER_ADDRESS:localhost}:8761/eureka
+logging:
+  level:
+    com.netflix.eureka: DEBUG

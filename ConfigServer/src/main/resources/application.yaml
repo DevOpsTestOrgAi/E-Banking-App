@@ -1,5 +1,6 @@
 server:
   port: 9296
+  #address: 192.168.100.152
 
 spring:
   application:
@@ -20,6 +21,4 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
-
-
 

@@ -52,11 +52,6 @@ public interface ClientManagementService {
 
     FindKYCResponse findKYC(String identity);
     AddKYCResponse addKYC( KYCRequest kycRequest);
-
-    AddCustomerToBlackListResponse addCustomerToBlackList(AddCustomerToBlackListRequest addCustomerToBlackListRequest);
-
-    ListBlackListedCustomersResponse getAllBlacklistedCustomers();
-
     UpdateKYCResponse updateKYCInformation(String cin, KYC updatedKYC);
 
     List<KYC> getAllKYC();
@@ -68,6 +63,4 @@ public interface ClientManagementService {
     Wallet getWalletByWalletID(Long id);
 
     Customer getCustomerByIdNumber(String cin);
-
-    void deleteById(Long id);
 }
