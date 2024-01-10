@@ -10,11 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/notifications")
-@CrossOrigin(origins = "*")
+@RequestMapping("/notifications")
+// @CrossOrigin(origins = "*")
 public class NotificationsController {
     @Autowired
     NotificationsServcie notificationsServcie  ;
@@ -34,9 +32,4 @@ public class NotificationsController {
 //
 //        return notificationsServcie.test(customer);
 //    }
-    @GetMapping("/test")
-    public ResponseEntity<List<String>> getNotificationsTest() {
-        return new ResponseEntity<>(List.of("Hello"), HttpStatus.OK);
-    }
-
 }

@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @Data
 public class BlacklistRequest {
+    private String firstName  ;
+    private String lastName ;
     private String cin;
     private String rib ;
-    private  String  phone  ;
-
     private String reason;
 }
